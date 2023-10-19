@@ -3,12 +3,12 @@
 ## Processes  
 ### Data  
 - [ ] Download data  
-- [ ] Data structure  
+- [x] Data structure  
 - [ ] Augmentation  
   
 ### Model
-- [ ] Resnet18  
-- [ ] Darknet19  
+- [x] Resnet18  
+- [x] Darknet19  
 - [ ] Googlenet22  
 - [ ] VGG19  
   
