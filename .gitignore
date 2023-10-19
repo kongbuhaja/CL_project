@@ -1,0 +1,11 @@
+#files
+*.jpg
+*.ipynb
+test.py
+
+#dir
+/checkpoints
+/data/MNIST
+/data/IMAGENET
+/data/CIFAR100
+/data2
