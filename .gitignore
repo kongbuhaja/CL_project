@@ -9,4 +9,4 @@ test.py
 /data/IMAGENET
 /data/CIFAR100
 /data2
-/**/__pycache__/
+/**/__pycache__
