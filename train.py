@@ -18,7 +18,7 @@ train_dataset, val_dataset = load_dataset(args.dataset)
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
-model = load_model(args.dataset, args.model, len(train_dataset.unique_labels), 20).to(Device)
+model = load_model(args.dataset, args.model, len(train_dataset.unique_labels), 100).to(Device)
 
 epochs = args.epochs
 train_iters = train_dataset.length//batch_size
@@ -49,7 +49,7 @@ for epoch in range(epochs):
     if epoch%5==0:
         val_loss = 0.
         for iter, (x_data, y_data) in enumerate(val_dataloader):
-            pred = model(x_data)
+            pred = model(x_data/255.)
             loss = loss_fn(pred, y_data[..., 0])
 
             val_loss += loss.item()
@@ -76,7 +76,7 @@ row = None
 output = None
 
 for i, (x, y) in enumerate(zip(test_x_data, test_y_data)):
-    pred = np.argmax(model(x[None]).detach().cpu().numpy(), -1)
+    pred = np.argmax(model(x[None]/255.).detach().cpu().numpy(), -1)
     x = x.cpu().numpy()
     y = y.cpu().numpy()
     if x.shape[-1] == 1:

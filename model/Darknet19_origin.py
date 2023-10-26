@@ -70,7 +70,7 @@ class DarknetTiny(nn.Module):
         out = self.maxpool(out)
 
         out = self.conv5(out)
-        # out = self.maxpool(out)
+        out = self.maxpool(out)
 
         out = self.conv6(out)
         out = self.conv7(out)
