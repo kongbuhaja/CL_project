@@ -11,8 +11,8 @@ import numpy as np
 
 args = arg_parse()
 batch_size = args.batch_size
-# Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-Device = torch.device("cpu")
+Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# Device = torch.device("cpu")
 
 train_dataset, val_dataset = load_dataset(args.dataset)
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
@@ -34,11 +34,11 @@ elif args.loss == 'BCE':
 optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
 
 for epoch in range(epochs):
+    # train
     train_loss = 0.
-
     for iter, (x_data, y_data) in enumerate(train_dataloader):
-        pred = model(x_data/255.)
-        loss = loss_fn(pred, y_data[..., 0])
+        pred = model(x_data.to(Device)/255.)
+        loss = loss_fn(pred, y_data[..., 0].to(Device))
         loss.backward()
         optimizer.step()
 
@@ -46,19 +46,22 @@ for epoch in range(epochs):
         print(f'epoch:{epoch+1}/{epochs}, iter:{iter+1}/{train_iters}| total_loss: {train_loss/(iter+1):.3f}', flush=True, end='\r',)
     print(f'epoch: {epoch+1}/{epochs}, iter:{iter+1}/{train_iters}| total_loss: {train_loss/train_iters:.3f}')
 
-    if epoch%5==0:
-        val_loss = 0.
-        for iter, (x_data, y_data) in enumerate(val_dataloader):
-            pred = model(x_data/255.)
-            loss = loss_fn(pred, y_data[..., 0])
+    # eval
+    with torch.no_grad():
+        if epoch%5==0:
+            val_loss = 0.
+            for iter, (x_data, y_data) in enumerate(val_dataloader):
+                pred = model(x_data.to(Device)/255.)
+                loss = loss_fn(pred, y_data[..., 0].to(Device))
 
-            val_loss += loss.item()
-            # need to make evaluate metrics
-            print(f'epoch:{epoch+1}/{epochs}, iter:{iter+1}/{val_iters}| val_loss: {val_loss/(iter+1):.3f}', flush=True, end='\r')
-        print(f'epoch: {epoch+1}/{epochs}, iter: {iter+1}/{val_iters}| val_loss: {val_loss/val_iters:.3f}')
+                val_loss += loss.item()
+                # need to make evaluate metrics
+                print(f'epoch:{epoch+1}/{epochs}, iter:{iter+1}/{val_iters}| val_loss: {val_loss/(iter+1):.3f}', flush=True, end='\r')
+            print(f'epoch: {epoch+1}/{epochs}, iter: {iter+1}/{val_iters}| val_loss: {val_loss/val_iters:.3f}')
+
         if val_loss/train_iters < best_loss:
             best_loss = val_loss/train_iters
-            save_model(model, 'mnist', 'DarkNet19')
+            save_model(model, args.dataset, args.model)
             
 # temporary code
 test_x_data = []
