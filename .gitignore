@@ -1,7 +1,7 @@
 #files
 *.jpg
 *.ipynb
-test.py
+# test.py
 
 #dir
 /checkpoints/*
