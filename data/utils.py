@@ -3,13 +3,14 @@ from torch.utils.data import Dataset
 from torchvision import datasets, transforms
 import os, shutil, cv2
 import numpy as np
+from data.augmentation import *
+from torchvision import transforms
 
 
 # need to make transform
 class Custom_Dataset(Dataset):
-    def __init__(self, path, height=28, width=28):
-        self.height = height
-        self.width = width
+    def __init__(self, path, image_size, transfrom=True):
+        self.image_size = [int(x) for x in image_size.split('x')]
         self.images = []
         self.labels = []
         for label in os.listdir(path):
@@ -19,9 +20,17 @@ class Custom_Dataset(Dataset):
 
         self.unique_labels = np.unique(self.labels).tolist()
         self.length = len(self.images)
-        
+
+        if transfrom:
+            self.transforms = transforms.Compose([Padding(), 
+                                                  Resize(self.image_size),
+                                                  Normalization()])
+        else:
+            self.transforms = Copy()
+
     def __getitem__(self, idx):
         image = cv2.cvtColor(cv2.imread(self.images[idx], cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
+        image = self.transforms(image)
         image = torch.FloatTensor(image)
         label = torch.LongTensor(self.labels[idx])
 
@@ -30,7 +39,7 @@ class Custom_Dataset(Dataset):
     def __len__(self):
         return len(self.images)
     
-def load_dataset(data_name, path='data'):
+def load_dataset(data_name, image_size, path='data'):
     path = f'{path}/{data_name.upper()}'
     train_path = f'{path}/train'
     val_path = f'{path}/val'
@@ -41,8 +50,8 @@ def load_dataset(data_name, path='data'):
     elif not os.path.exists(train_path) and not os.path.exists(val_path):
         download_dataset(data_name, path=path)
     
-    train_dataset = Custom_Dataset(train_path)
-    val_dataset = Custom_Dataset(val_path)
+    train_dataset = Custom_Dataset(train_path, image_size)
+    val_dataset = Custom_Dataset(val_path, image_size)
     
     return train_dataset, val_dataset
 

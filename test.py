@@ -18,7 +18,7 @@ Device = torch.device("cpu")
 
 model = load_model(args.dataset, args.model, 10, 20).to(Device)
 
-torchsummary.summary(model, (28,28,3), device='cpu')
+torchsummary.summary(model, (100,100,3), device='cpu')
 
 # for data in d_tr:
 #     y = data[2]
