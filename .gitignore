@@ -5,6 +5,7 @@ test.py
 
 #dir
 /checkpoints
+!/checkpoints/utils.py
 /data/MNIST
 /data/IMAGENET
 /data/CIFAR100
