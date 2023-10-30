@@ -4,7 +4,7 @@
 test.py
 
 #dir
-/checkpoints
+/checkpoints/*
 !/checkpoints/utils.py
 /data/MNIST
 /data/IMAGENET
