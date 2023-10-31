@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader
 
 from model.utils import load_model, save_model
 from data.utils import *
-from utils import arg_parse
+from utils import arg_parse, loss_function, LR_schedular
 
 import numpy as np
 
@@ -13,41 +13,36 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 args = arg_parse()
-batch_size = args.batch_size
 Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # Device = torch.device("cpu")
 
 train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
-train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True)
+val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True)
 
 model, start_epochs, best_loss, ap = load_model(args.dataset, args.model, len(train_dataset.unique_labels), 100, load=args.load)
+model.to(Device)
 
 epochs = start_epochs + args.epochs
-train_iters = train_dataset.length//batch_size
-val_iters = val_dataset.length//batch_size
+train_iters = train_dataset.length//args.batch_size
+val_iters = val_dataset.length//args.batch_size
 
-if args.loss == 'CE':
-    loss_fn = torch.nn.CrossEntropyLoss()
-elif args.loss == 'BCE':
-    loss_fn = lambda x, y :torch.nn.BCEWithLogitsLoss()(x, 
-                torch.nn.functional.one_hot(y, len(train_dataset.unique_labels)).type(torch.float32))
-
-model.to(Device)
 optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
+scheduler = LR_schedular(optimizer, 'linear')
+loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
 
-for epoch in range(start_epochs, epochs):
+for epoch in range(start_epochs+1, epochs):
     # train
     train_loss = 0.
     for iter, (x_data, y_data) in enumerate(train_dataloader):
         pred = model(x_data.to(Device))
         loss = loss_fn(pred, y_data[..., 0].to(Device))
         loss.backward()
-        optimizer.step()
+        scheduler.step(epoch*train_iters+iter, epochs*train_iters, args.lr/10)
 
         train_loss += loss.item()
-        print(f'epoch: {epoch+1}/{epochs}, iter:{iter+1}/{train_iters}| total_loss: {train_loss/(iter+1):.3f}', flush=True, end='\r',)
-    print(f'epoch: {epoch+1}/{epochs}, iter:{iter+1}/{train_iters}| total_loss: {train_loss/train_iters:.3f}')
+        print(f'epoch: {epoch}/{epochs}, iter: {iter+1}/{train_iters} | lr: {scheduler.lr:.4f}, total_loss: {train_loss/(iter+1):.4f}', flush=True, end='\r',)
+    print(f'epoch: {epoch}/{epochs}, iter: {iter+1}/{train_iters} | lr: {scheduler.lr:.4f}, total_loss: {train_loss/train_iters:.4f}')
 
     # eval
     with torch.no_grad():
@@ -59,12 +54,12 @@ for epoch in range(start_epochs, epochs):
 
                 val_loss += loss.item()
                 # need to make evaluate metrics
-                print(f'epoch: {epoch+1}/{epochs}, iter:{iter+1}/{val_iters}| val_loss: {val_loss/(iter+1):.3f}', flush=True, end='\r')
-            print(f'epoch: {epoch+1}/{epochs}, iter: {iter+1}/{val_iters}| val_loss: {val_loss/val_iters:.3f}')
+                print(f'epoch: {epoch}/{epochs}, iter: {iter+1}/{val_iters} | val_loss: {val_loss/(iter+1):.4f}', flush=True, end='\r')
+            print(f'epoch: {epoch}/{epochs}, iter: {iter+1}/{val_iters} | val_loss: {val_loss/val_iters:.4f}')
 
-        if val_loss/train_iters < best_loss:
-            best_loss = val_loss/train_iters
-            save_model(model, args.dataset, args.model, epoch, best_loss, 0.)
+            if val_loss/train_iters < best_loss:
+                best_loss = val_loss/train_iters
+                save_model(model, args.dataset, args.model, epoch, best_loss, 0.)
             
 # temporary code
 test_x_data = []

@@ -61,10 +61,10 @@ class DarknetTiny(nn.Module):
         out = self.maxpool(out)
 
         out = self.conv2(out)
-        # out = self.maxpool(out)
+        out = self.maxpool(out)
 
         out = self.conv3(out)
-        # out = self.maxpool(out)
+        out = self.maxpool(out)
 
         out = self.conv4(out)
         out = self.maxpool(out)

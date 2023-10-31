@@ -1,6 +1,7 @@
 #files
 *.jpg
 *.ipynb
+*.log
 # test.py
 
 #dir

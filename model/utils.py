@@ -15,15 +15,15 @@ def Model(model_name, nclasses, nf=20, input_channels=3):
 
     return model
 
-def save_model(model, dataset_name, model_name, epochs, loss, ap=0):
+def save_model(model, dataset_name, model_name, epoch, loss, ap=0):
     dir_check(dataset_name)
     model_path = f'./checkpoints/{dataset_name}/{model_name}.pt'
     info_path = f'./checkpoints/{dataset_name}/{model_name}.info'
     torch.save(model, model_path)
     with open(info_path, 'w') as f:
-        text = f'epochs:{epochs}\n\
-                 loss:{loss}\n\
-                 ap:{ap}'
+        text = f'epoch:{epoch}\n' +\
+               f'loss:{loss}\n' +\
+               f'ap:{ap}'
         f.write(text)
     print(f'Success to save model in {model_path}')
 
