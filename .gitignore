@@ -8,6 +8,7 @@ multi_train.py
 #dir
 /checkpoints/*
 !/checkpoints/utils.py
+!/result
 /data/MNIST
 /data/IMAGENET
 /data/CIFAR100
