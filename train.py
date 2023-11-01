@@ -38,7 +38,7 @@ for epoch in range(start_epoch+1, epochs+1):
         pred = model(x_data.to(Device))
         loss = loss_fn(pred, y_data[..., 0].to(Device))
         loss.backward()
-        scheduler.step(epoch*train_iters+iter+1, epochs*train_iters, args.lr/100)
+        scheduler.step(epoch*train_iters+iter, epochs*train_iters, args.lr/100)
 
         train_loss += loss.item()
         print(f'epoch: {epoch}/{epochs}, iter: {iter+1}/{train_iters} | lr: {scheduler.lr:.4f}, total_loss: {train_loss/(iter+1):.4f}', flush=True, end='\r',)
