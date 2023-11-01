@@ -12,7 +12,7 @@ def arg_parse():
     parser.add_argument('--lr', dest='lr', type=float, default=1e-3, help='learning rate for training')
 
     parser.add_argument('--dataset', dest='dataset', type=str, default='mnist', help='dataset for training')
-    parser.add_argument('--image_size', dest='image_size', type=str, default='128x128', help='dataset for training')
+    parser.add_argument('--image_size', dest='image_size', type=str, default='64x64', help='dataset for training')
 
     args = parser.parse_args()
     print(f'dataset: {args.dataset}')

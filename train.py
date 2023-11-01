@@ -20,10 +20,10 @@ train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
 train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True)
 val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True)
 
-model, start_epochs, best_loss, ap = load_model(args.dataset, args.model, len(train_dataset.unique_labels), 100, load=args.load)
+model, start_epoch, best_loss, ap = load_model(args.dataset, args.model, len(train_dataset.unique_labels), 100, load=args.load)
 model.to(Device)
 
-epochs = start_epochs + args.epochs
+epochs = args.epochs
 train_iters = train_dataset.length//args.batch_size
 val_iters = val_dataset.length//args.batch_size
 
@@ -31,14 +31,14 @@ optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
 scheduler = LR_schedular(optimizer, 'linear')
 loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
 
-for epoch in range(start_epochs+1, epochs):
+for epoch in range(start_epoch+1, epochs+1):
     # train
     train_loss = 0.
     for iter, (x_data, y_data) in enumerate(train_dataloader):
         pred = model(x_data.to(Device))
         loss = loss_fn(pred, y_data[..., 0].to(Device))
         loss.backward()
-        scheduler.step(epoch*train_iters+iter, epochs*train_iters, args.lr/10)
+        scheduler.step(epoch*train_iters+iter+1, epochs*train_iters, args.lr/100)
 
         train_loss += loss.item()
         print(f'epoch: {epoch}/{epochs}, iter: {iter+1}/{train_iters} | lr: {scheduler.lr:.4f}, total_loss: {train_loss/(iter+1):.4f}', flush=True, end='\r',)
@@ -46,7 +46,7 @@ for epoch in range(start_epochs+1, epochs):
 
     # eval
     with torch.no_grad():
-        if epoch%5==0 or start_epochs==epochs-1:
+        if epoch%5==0 or epoch==epochs:
             val_loss = 0.
             for iter, (x_data, y_data) in enumerate(val_dataloader):
                 pred = model(x_data.to(Device))
@@ -97,7 +97,7 @@ for i, (x, y) in enumerate(zip(test_x_data, test_y_data)):
                 output = np.concatenate([output, row], 0)
             row = None
 
-cv2.imwrite('image.jpg', output)
+cv2.imwrite(f'result/{args.model}.jpg', output)
 # cv2.imshow('image', output)
 # cv2.waitKey()
 # cv2.destroyAllWindows()

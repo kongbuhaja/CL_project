@@ -16,6 +16,9 @@ def Xavier(m):
         m.weight.data.uniform_(-a, a)
         m.bias.data.fill_(0.0)
 
+def conv(in_planes, out_planes, kernel_size=3, stride=1, bias=False):
+    return nn.Conv2d(in_planes, out_planes, kernel_size=kernel_size, stride=stride,
+                     padding=1 if kernel_size==3 else 0, bias=bias)
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
