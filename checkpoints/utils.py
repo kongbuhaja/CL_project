@@ -8,4 +8,4 @@ def dir_check(dataset_name, model_name):
         os.makedirs(model_dir)
     elif not os.path.exists(model_dir):
         os.makedirs(model_dir)
-    return f'model_dir/{model_dir}'
+    return model_dir

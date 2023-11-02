@@ -48,8 +48,8 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, nf * 4, num_blocks[2], stride=2)
         self.layer4 = self._make_layer(block, nf * 8, num_blocks[3], stride=2)
         self.flatten = nn.Flatten()
-        self.avg_pool = nn.modules.AvgPool2d(2)
-        self.linear = nn.Linear(nf * 8 * 16* block.expansion, num_classes)#nn.Linear(nf * 8 * block.expansion, num_classes)
+        self.avg_pool = nn.AvgPool2d(2)
+        self.linear = nn.Linear(nf * 8 * 16 * block.expansion, num_classes)#nn.Linear(nf * 8 * block.expansion, num_classes)
 
         self.activate = nn.ReLU()
 

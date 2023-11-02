@@ -3,60 +3,94 @@ import cv2
 from torchvision.transforms import Lambda
 from torch.utils.data import DataLoader
 
-from model.utils import load_model, save_model
+from model.utils import load_model
 from data.utils import *
-from utils import arg_parse
+from utils import arg_parse, loss_function
 
 import numpy as np
 
-args = arg_parse()
-batch_size = args.batch_size
-Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-# Device = torch.device("cpu")
+def main():
+    np.random.seed(42)
+    torch.manual_seed(42)
+    args = arg_parse()
+    batch_size = args.batch_size
+    Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    # Device = torch.device("cpu")
 
-train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
-val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
+    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
-model, start_epochs, best_loss, ap = load_model(args.dataset, args.model, len(train_dataset.unique_labels), 100, load=True)
+    model, start_epoch, best_recall, recalls = load_model(args.dataset, args.model, len(train_dataset.unique_labels), 100, load=True)
+    model.to(Device)
+    loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
 
-val_iters = val_dataset.length//batch_size
+    test_x_data = []
+    test_p_data = []
+    test_y_data = []
 
-test_x_data = []
-test_y_data = []
-for x_data, y_data in val_dataloader:
-    for x, y in zip(x_data, y_data):
-        test_x_data += [x]
-        test_y_data += [y]
-        if len(test_x_data) > 8:
-            break
-    if len(test_x_data) > 8:
-        break
-
-row = None
-output = None
-
-for i, (x, y) in enumerate(zip(test_x_data, test_y_data)):
     with torch.no_grad():
-        pred = np.argmax(model(x[None].to(Device)).cpu().numpy(), -1)
-    x = (x.numpy()*255).astype(np.uint8)
-    y = y.numpy()
-    if x.shape[-1] == 1:
-        x = cv2.cvtColor(x, cv2.COLOR_GRAY2RGB)
-    x = cv2.resize(x, [100, 100])
-    x = cv2.putText(x, str(pred[0]), (0,20), cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 0, 0), 2)
-    x = cv2.putText(x, str(y[0]), (82,20), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 0, 255), 2)
-    if row is None:
-        row = x
-    else:
-        row = np.concatenate([row, x], 1)
-        if i%3 == 2:
-            if output is None:
-                output = row
-            else:
-                output = np.concatenate([output, row], 0)
-            row = None
+        positive = 0
+        val_loss = 0.
+        for iter, (x_data, y_data) in enumerate(val_dataloader):
+            pred = model(x_data.to(Device))
+            loss = loss_fn(pred, y_data[..., 0].to(Device))
 
-cv2.imwrite('image.jpg', output)
-# cv2.imshow('image', output)
-# cv2.waitKey()
-# cv2.destroyAllWindows()
+            val_loss += loss.item()
+
+            pred_label = torch.argmax(pred, -1).to('cpu')
+            positive += sum(pred_label == y_data[..., 0])
+            recall = positive/((iter+1)*batch_size)
+            
+            if len(test_x_data) == iter and len(test_x_data) < 9:
+                test_x_data += [x_data[0].to('cpu').numpy()]
+                test_p_data += [pred_label[0].to('cpu').numpy()]
+                test_y_data += [y_data[0][0].to('cpu').numpy()]
+
+            print(f'Validation iter: {iter+1}/{len(val_dataloader)} | recall: {recall:.3f}, val_loss: {val_loss/(iter+1):.4f}', flush=True, end='\r')
+        print(f'Validation iter: {iter+1}/{len(val_dataloader)} | recall: {recall:.3f}, val_loss: {val_loss/len(val_dataloader):.4f}')
+ 
+    
+    row = None
+    output = None
+
+    for i, (x, p, y) in enumerate(zip(test_x_data, test_p_data, test_y_data)):
+        x = (x*255).astype(np.uint8)
+        if x.shape[-1] == 1:
+            x = cv2.cvtColor(x, cv2.COLOR_GRAY2RGB)
+        x = cv2.resize(x, [100, 100])
+        x = cv2.putText(x, str(p), (0, 20), cv2.FONT_HERSHEY_COMPLEX, 0.8, (255, 0, 0), 2)
+        x = cv2.putText(x, str(y), (82,20), cv2.FONT_HERSHEY_COMPLEX, 0.8, (0, 0, 255), 2)
+        if row is None:
+            row = x
+        else:
+            row = np.concatenate([row, x], 1)
+            if i%3 == 2:
+                if output is None:
+                    output = row
+                else:
+                    output = np.concatenate([output, row], 0)
+                row = None
+
+    if not os.path.exists('output'):
+        os.makedirs('output')
+    cv2.imwrite(f'output/{args.model}.jpg', output)
+
+def eval(model, val_dataloader, loss_fn, Device):
+    with torch.no_grad():
+        positive = 0
+        val_loss = 0.
+        for iter, (x_data, y_data) in enumerate(val_dataloader):
+            pred = model(x_data.to(Device))
+            loss = loss_fn(pred, y_data[..., 0].to(Device))
+
+            val_loss += loss.item()
+            
+            pred_label = torch.argmax(pred, -1).to('cpu')
+            positive += sum(pred_label == y_data[..., 0])
+            recall = positive/((iter+1)*val_dataloader.batch_size)
+            print(f'Validation iter: {iter+1}/{len(val_dataloader)} | recall: {recall:.3f}, val_loss: {val_loss/(iter+1):.4f}', flush=True, end='\r')
+        print(f'Validation iter: {iter+1}/{len(val_dataloader)} | recall: {recall:.3f}, val_loss: {val_loss/len(val_dataloader):.4f}')
+    return recall.numpy()
+
+if __name__ == '__main__':
+    main()

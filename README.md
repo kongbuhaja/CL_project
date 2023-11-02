@@ -2,9 +2,9 @@
   
 ## Processes  
 ### Data  
-- [ ] Download data  
+- [x] Download data  
 - [x] Data structure  
-- [ ] Augmentation  
+- [x] Augmentation  
   
 ### Model
 - [x] Resnet18  
@@ -13,9 +13,8 @@
 - [ ] VGG19  
   
 ### Task  
-- [ ] Train Based Model  
-- [ ] Validate Based Model using metrics  
+- [x] Train Based Model  
+- [x] Evaluate Based Model  
 - [ ] Implement Contiual learning model and metric  
 - [ ] Make Comparable graph  
 - [ ] Suggest new continual learning model  
-

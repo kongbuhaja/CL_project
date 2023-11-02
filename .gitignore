@@ -1,5 +1,4 @@
 #files
-# *.jpg
 *.ipynb
 *.log
 multi_train.py
@@ -8,8 +7,8 @@ multi_train.py
 #dir
 /checkpoints/*
 !/checkpoints/utils.py
-/data/MNIST
-/data/IMAGENET
-/data/CIFAR100
+/data/*
+!/data/augmentation.py
+!/data/utils.py
 /data2
 /**/__pycache__

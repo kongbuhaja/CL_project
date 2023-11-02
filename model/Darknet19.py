@@ -44,12 +44,12 @@ class DarknetTiny(nn.Module):
         self.conv5 = self._make_layer(block, nf * 8, num_blocks[3], 1) #9-13
 
         self.conv6 = self._make_layer(block, nf * 16, num_blocks[4], 1) #14-18
-        self.conv7 = block(nf * 32 * block.expansion, self.num_classes, 1, 1, bn=False, activate=False) #19
-        # self.flatten = nn.Flatten()
-        # self.linear = nn.Linear(nf*5*block.expansion*16, self.num_classes)
-        self.gavgpool = nn.AdaptiveAvgPool2d((1))
-        self.maxpool = nn.MaxPool2d(2)
-        # self.softmax = nn.Softmax(dim=1)
+        # self.conv7 = block(nf * 32 * block.expansion, self.num_classes, 1, 1, bn=False, activate=False) #19
+        
+        self.gavgpool = nn.AdaptiveAvgPool2d((1,1))
+        self.linear = nn.Linear(nf*block.expansion*32, self.num_classes)
+
+        self.maxpool = nn.MaxPool2d(2,2)
 
     def _make_layer(self, block, planes, num_block, stride):
         strides = [stride] + [1] * (num_block - 1)
@@ -63,8 +63,7 @@ class DarknetTiny(nn.Module):
 
 
     def forward(self, x):
-        # batch_size, height, width, channels = x.size()
-        # out = self.conv1(x.view(batch_size, channels, height, width))
+        batch_size, height, width, channels = x.size()
         out = self.conv1(x.permute(0,3,1,2).contiguous())
         out = self.maxpool(out)
 
@@ -81,11 +80,11 @@ class DarknetTiny(nn.Module):
         out = self.maxpool(out)
 
         out = self.conv6(out)
-        out = self.conv7(out)
-        # out = self.flatten(out)
-        # out = self.linear(out)
+        
+        # out = self.conv7(out)
         out = self.gavgpool(out)
-        return out.view(-1, self.num_classes)
+        out = self.linear(out.view(batch_size, -1))
+        return out
 
 def DarkNet19(nclasses, nf=20, input_channels=3):
     return DarknetTiny(DarknetBlock, [1, 3, 3, 5, 5], nclasses, nf, input_channels)
