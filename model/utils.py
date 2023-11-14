@@ -3,18 +3,21 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 
-from model.Darknet19 import DarkNet19
-from model.Resnet18 import ResNet18
+from model.Darknet import DarkNet19
+from model.Resnet import ResNet18
+from model.VGG import VGG19
 from model.MLP import MLP
 from checkpoints.utils import dir_check
 
-def Model(model_name, nclasses, nf=20, input_channels=3):
+def Model(model_name, channel, nclasses, image_size, in_channel):
     if model_name == 'DarkNet19':
-        model = DarkNet19(nclasses, nf, input_channels)
+        model = DarkNet19(channel, nclasses, in_channel)
     elif model_name == 'ResNet18':
-        model = ResNet18(nclasses, nf, input_channels)
+        model = ResNet18(channel, nclasses, in_channel)
+    elif model_name == 'VGG19':
+        model = VGG19(channel, nclasses, image_size, in_channel)
     elif model_name == 'MLP':
-        model = MLP(nclasses, nf, input_channels)
+        model = MLP(channel, nclasses, in_channel)
 
     return model
 
@@ -30,7 +33,7 @@ def save_model(model, dataset_name, model_name, epoch, recall):
         f.write(text)
     print(f'Success to save model in {model_path}')
 
-def load_model(dataset_name, model_name, nclasses, nf=20, input_channels=3, load=False):
+def load_model(dataset_name, model_name, channel, nclasses, image_size, in_channel=3, load=False):
     dir = f'./checkpoints/{dataset_name}/{model_name}/'
     model_path = dir + 'model.pt'
     info_path = dir + 'model.info'
@@ -53,33 +56,34 @@ def load_model(dataset_name, model_name, nclasses, nf=20, input_channels=3, load
         print(f'Fail to load model from {model_path}, So ', end='')
 
     print(f'Create {model_name} model')
-    model = Model(model_name, nclasses, nf=nf, input_channels=input_channels)
+    model = Model(model_name, channel, nclasses, image_size, in_channel)
     return model, *[0, 0.], []
 
-def save_recall(dataset_name, model_name, recalls):
-    epochs = [e*5 for e in range(1, len(recalls)+1)]
+def save_recall(dataset_name, model_name, recalls, eval_term):
+    epochs = [e*eval_term for e in range(1, len(recalls)+1)]
     dir_path = f'checkpoints/{dataset_name}/{model_name}' 
     with open(f'{dir_path}/recall.txt', 'w') as f:
         for r in recalls:
             f.write(f'{r} ')
-    
+    plt.clf()
     plt.xlabel('epochs')
     plt.xticks(epochs)
     plt.ylabel('recall')
-    # plt.yticks([i*0.1 for i in range(10)])
-    plt.title(f'{dataset_name} X {model_name} best recall : {max(recalls):.7f}')
+    plt.title(f'{dataset_name} X {model_name}')
     
-    h_diff = (max(recalls)-min(recalls))*0.01
-    w_diff = (max(epochs)-min(epochs))
-    for e, r, in zip(epochs, recalls):
-        plt.text(e-w_diff/len(epochs)/2, r+h_diff/len(recalls)*2, f'{r:.5f}')
+    width = epochs[-1]
+    height = max(recalls)-min(recalls)
+    
+
     max_idx = np.argmax(recalls, -1)
+    min_idx = np.argmin(recalls, -1)
+    plt.text(epochs[max_idx]-width/16, recalls[max_idx]+height/len(recalls)*2*0.01, f'{recalls[max_idx]:.5f}')
+    plt.text(epochs[min_idx]-width/16, recalls[min_idx]+height/len(recalls)*2*0.01, f'{recalls[min_idx]:.5f}')
 
     plt.plot(epochs, recalls)
-
-    highlight = patches.Ellipse((epochs[max_idx], recalls[max_idx] + h_diff*2), 
-                                 width = (max(epochs)-min(epochs))/len(epochs)*1.5,
-                                 height = (max(recalls)-min(recalls))/len(recalls)/2,
+    highlight = patches.Ellipse((epochs[max_idx]-width/16*0.22, recalls[max_idx] + height*2*0.01), 
+                                 width = width/6,
+                                 height = height/7*0.5,
                                  edgecolor = 'red', 
                                  linestyle = 'dotted',
                                  linewidth = 2,

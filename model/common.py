@@ -18,7 +18,7 @@ def Xavier(m):
 
 def conv(in_planes, out_planes, kernel_size=3, stride=1, bias=False):
     return nn.Conv2d(in_planes, out_planes, kernel_size=kernel_size, stride=stride,
-                     padding=1 if kernel_size==3 else 0, bias=bias)
+                     padding=(kernel_size-1)//2, bias=bias)
 
 def conv3x3(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
@@ -27,6 +27,37 @@ def conv3x3(in_planes, out_planes, stride=1):
 def conv1x1(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,
                      padding=0, bias=False)
+
+class Conv_Block(nn.Module):
+    def __init__(self, in_channel, channel, kernel_size=3, stride=1, bn=False, activation='relu'):
+        super().__init__()
+
+        layers = [conv(in_channel, channel, kernel_size, stride, not bn)]
+        layers += [nn.BatchNorm2d(channel)] if bn else []
+
+        if activation=='relu':
+            layers += [nn.ReLU()]
+
+        self.layers = nn.Sequential(*layers)
+
+    def forward(self, x):
+        out = self.layers(x)
+        return out
+    
+class FC_Block(nn.Module):
+    def __init__(self, in_channel, channel, activation):
+        super().__init__()
+
+        layers = [nn.Linear(in_channel, channel)]
+
+        if activation=='relu':
+            layers += [nn.ReLU()]
+
+        self.layers = nn.Sequential(*layers)
+    
+    def forward(self, x):
+        out = self.layers(x)
+        return out
 
 
 
