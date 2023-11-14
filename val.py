@@ -5,29 +5,33 @@ from torch.utils.data import DataLoader
 
 from model.utils import load_model
 from data.utils import *
-from utils import arg_parse, loss_function
+from utils import arg_parse, loss_function, arg_print
 
 import numpy as np
 
 def main():
-    np.random.seed(42)
-    torch.manual_seed(42)
+    # np.random.seed(42)
+    # torch.manual_seed(42)
     args = arg_parse()
-    batch_size = args.batch_size
+    args.batch_size = 1
+    arg_print(args)
+
     Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     # Device = torch.device("cpu")
 
     train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
-    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True)
 
-    model, start_epoch, best_recall, recalls = load_model(args.dataset, args.model, len(train_dataset.unique_labels), 100, load=True)
-    model.to(Device)
+    model, start_epoch, best_recall, recalls = load_model(args.dataset, args.model, channel=args.channel, 
+                                                        nclasses=len(train_dataset.unique_labels),
+                                                        image_size=args.image_size, load=True)
     loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
 
     test_x_data = []
     test_p_data = []
     test_y_data = []
 
+    model.eval()
     with torch.no_grad():
         positive = 0
         val_loss = 0.
@@ -39,7 +43,8 @@ def main():
 
             pred_label = torch.argmax(pred, -1).to('cpu')
             positive += sum(pred_label == y_data[..., 0])
-            recall = positive/((iter+1)*batch_size)
+            
+            recall = positive/((iter+1)*args.batch_size)
             
             if len(test_x_data) == iter and len(test_x_data) < 9:
                 test_x_data += [x_data[0].to('cpu').numpy()]
@@ -76,6 +81,7 @@ def main():
     cv2.imwrite(f'output/{args.model}.jpg', output)
 
 def eval(model, val_dataloader, loss_fn, Device):
+    model.eval()
     with torch.no_grad():
         positive = 0
         val_loss = 0.
