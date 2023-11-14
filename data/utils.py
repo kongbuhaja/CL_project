@@ -10,7 +10,7 @@ from torchvision import transforms
 # need to make transform
 class Custom_Dataset(Dataset):
     def __init__(self, path, image_size, transfrom=True):
-        self.image_size = [int(x) for x in image_size.split('x')]
+        self.image_size = image_size
         self.images = []
         self.labels = []
         for label in os.listdir(path):

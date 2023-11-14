@@ -10,5 +10,5 @@ multi_train.py
 /data/*
 !/data/augmentation.py
 !/data/utils.py
-/data2
 /**/__pycache__
+/output/*

@@ -5,21 +5,29 @@ def arg_parse():
     parser = argparse.ArgumentParser(description='base model')
 
     parser.add_argument('--model', dest='model', type=str, default='DarkNet19', help='model to train')
+    parser.add_argument('--channel', dest='channel', type=int, default=16, help='channel of basis layers')
     parser.add_argument('--loss' , dest='loss', type=str, default='CE', help='function to train model')
     parser.add_argument('--load', dest='load', type=bool, default=False, help='whether to load model')
-    parser.add_argument('--epochs', dest='epochs', type=int, default=40, help='epochs for training')
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=600, help='batch_size for training or inference')
+    parser.add_argument('--epochs', dest='epochs', type=int, default=20, help='epochs for training')
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=400, help='batch_size for training or inference')
     parser.add_argument('--lr', dest='lr', type=float, default=1e-2, help='learning rate for training')
 
+    parser.add_argument('--eval_term', dest='eval_term', type=int, default=5, help='term of evaluate model')
+
     parser.add_argument('--dataset', dest='dataset', type=str, default='mnist', help='dataset for training')
-    parser.add_argument('--image_size', dest='image_size', type=str, default='64x64', help='dataset for training')
+    parser.add_argument('--image_size', dest='image_size', type=str, default='256x256', help='dataset for training')
 
     args = parser.parse_args()
-    print(f'dataset: {args.dataset}')
-    print(f'model: {args.model}')
-    print(f'loss: {args.loss}')
+    args.image_size = [int(l) for l in args.image_size.split('x')]
 
     return args
+
+def arg_print(args):
+    print(f'dataset: {args.dataset}')
+    print(f'image_size: {args.image_size[0]}x{args.image_size[1]}')
+    print(f'batch_size: {args.batch_size}')
+    print(f'model: {args.model}')
+    print(f'loss: {args.loss}')
 
 class LR_schedular:
     def __init__(self, optimizer, schedule):
