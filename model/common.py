@@ -29,8 +29,9 @@ def conv1x1(in_planes, out_planes, stride=1):
                      padding=0, bias=False)
 
 class Conv_Block(nn.Module):
-    def __init__(self, in_channel, channel, kernel_size=3, stride=1, bn=False, activation='relu'):
+    def __init__(self, in_channel, channel, kernel_size=3, stride=1, bn=True, activation='relu'):
         super().__init__()
+        self.channel = channel
 
         layers = [conv(in_channel, channel, kernel_size, stride, not bn)]
         layers += [nn.BatchNorm2d(channel)] if bn else []
@@ -47,6 +48,7 @@ class Conv_Block(nn.Module):
 class FC_Block(nn.Module):
     def __init__(self, in_channel, channel, activation):
         super().__init__()
+        self.channel = channel
 
         layers = [nn.Linear(in_channel, channel)]
 

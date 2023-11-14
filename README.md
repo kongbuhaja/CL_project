@@ -10,7 +10,7 @@
 - [x] Resnet18  
 - [x] Darknet19  
 - [ ] Googlenet22  
-- [ ] VGG19  
+- [x] VGG19  
   
 ### Task  
 - [x] Train Based Model  

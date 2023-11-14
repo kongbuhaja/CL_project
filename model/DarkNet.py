@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from model.common import *
     
-class DarknetBlock(nn.Module):
+class DarkNetBlock(nn.Module):
     def __init__(self, in_channel, channel, n_layers, kernel_size=3, stride=1, bn=True, activation='relu'):
         super().__init__()
         self.channel = channel
@@ -14,21 +14,20 @@ class DarknetBlock(nn.Module):
             in_channel = c
 
         self.layers = nn.Sequential(*layers)
-        self.out_channel = channel
 
     def forward(self, x):
         out = self.layers(x)
         return out
 
-class DarknetTiny(nn.Module):
-    def __init__(self, block, channel, n_classes, n_blocks, muls, strides, in_channel, activation):
+class DarkNetTiny(nn.Module):
+    def __init__(self, channel, n_classes, n_blocks, muls, strides, in_channel, activation):
         super().__init__()
         
         layers = []
         for n_block, mul, stride in zip(n_blocks, muls, strides):
-            layers += [block(in_channel, channel * mul, n_block, stride=stride, activation=activation)]
+            layers += [DarkNetBlock(in_channel, channel * mul, n_block, stride=stride, activation=activation)]
             in_channel = layers[-1].channel
-            layers += [nn.MaxPool2d(2,2)]
+            layers += [nn.MaxPool2d((2,2), 2)]
         
         layers += [nn.AdaptiveAvgPool2d((1,1))]
 
@@ -43,8 +42,7 @@ class DarknetTiny(nn.Module):
         return out
 
 def DarkNet19(channel, n_classes, in_channel):
-    return DarknetTiny(DarknetBlock, 
-                       channel=channel, 
+    return DarkNetTiny(channel=channel, 
                        n_classes=n_classes, 
                        n_blocks=[1, 1, 3, 3, 5, 5], 
                        muls=[1, 2, 4, 8, 16, 32], 

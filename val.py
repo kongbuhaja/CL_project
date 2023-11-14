@@ -76,9 +76,10 @@ def main():
                     output = np.concatenate([output, row], 0)
                 row = None
 
-    if not os.path.exists('output'):
-        os.makedirs('output')
-    cv2.imwrite(f'output/{args.model}.jpg', output)
+    output_dir = f'output/{args.dataset}/{args.model}'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    cv2.imwrite(f'{output_dir}/output.jpg', output)
 
 def eval(model, val_dataloader, loss_fn, Device):
     model.eval()

@@ -3,21 +3,24 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 
-from model.Darknet import DarkNet19
-from model.Resnet import ResNet18
+from model.DarkNet import DarkNet19
+from model.ResNet import ResNet18
 from model.VGG import VGG19
+from model.GoogleNet import GoogleNet22
 from model.MLP import MLP
 from checkpoints.utils import dir_check
 
-def Model(model_name, channel, nclasses, image_size, in_channel):
+def Model(model_name, channel, n_classes, image_size, in_channel):
     if model_name == 'DarkNet19':
-        model = DarkNet19(channel, nclasses, in_channel)
+        model = DarkNet19(channel, n_classes, in_channel)
     elif model_name == 'ResNet18':
-        model = ResNet18(channel, nclasses, in_channel)
+        model = ResNet18(channel, n_classes, in_channel)
     elif model_name == 'VGG19':
-        model = VGG19(channel, nclasses, image_size, in_channel)
+        model = VGG19(channel, n_classes, image_size, in_channel)
+    elif model_name == 'GoogleNet22':
+        model = GoogleNet22(channel, n_classes, image_size, in_channel)
     elif model_name == 'MLP':
-        model = MLP(channel, nclasses, in_channel)
+        model = MLP(channel, n_classes, in_channel)
 
     return model
 
@@ -59,12 +62,14 @@ def load_model(dataset_name, model_name, channel, nclasses, image_size, in_chann
     model = Model(model_name, channel, nclasses, image_size, in_channel)
     return model, *[0, 0.], []
 
-def save_recall(dataset_name, model_name, recalls, eval_term):
+def save_recall(dataset_name, model_name, recalls, eval_term, save_dir='checkpoints'):
     epochs = [e*eval_term for e in range(1, len(recalls)+1)]
-    dir_path = f'checkpoints/{dataset_name}/{model_name}' 
-    with open(f'{dir_path}/recall.txt', 'w') as f:
-        for r in recalls:
-            f.write(f'{r} ')
+    dir_path = f'{save_dir}/{dataset_name}/{model_name}' 
+
+    if save_dir=='checkpoints':
+        with open(f'{dir_path}/recall.txt', 'w') as f:
+            for r in recalls:
+                f.write(f'{r} ')
     plt.clf()
     plt.xlabel('epochs')
     plt.xticks(epochs)
@@ -74,7 +79,6 @@ def save_recall(dataset_name, model_name, recalls, eval_term):
     width = epochs[-1]
     height = max(recalls)-min(recalls)
     
-
     max_idx = np.argmax(recalls, -1)
     min_idx = np.argmin(recalls, -1)
     plt.text(epochs[max_idx]-width/16, recalls[max_idx]+height/len(recalls)*2*0.01, f'{recalls[max_idx]:.5f}')
