@@ -7,26 +7,17 @@ class ResBlock(nn.Module):
     def __init__(self, in_channel, channel, kernel_size=3, stride=1, bn=True, activation='relu'):
         super().__init__()
         self.channel = channel
+        self.stride = stride
 
         layers = [Conv_Block(in_channel, channel, kernel_size, stride, bn, activation)]
-        # layers = [conv(in_channel, channel, kernel_size, stride, bias=not bn)]
-        # layers += [nn.BatchNorm2d(channel)] if bn else []
-        # layers += [nn.ReLU()]
-
-        layers += [Conv_Block(channel, channel, kernel_size, stride, bn, None)]
-        # layers += [conv(channel, channel, kernel_size, bias=not bn)]
-        # layers += [nn.BatchNorm2d(channel)] if bn else []
+        layers += [Conv_Block(channel, channel, kernel_size, 1, bn, None)]
 
         self.layers = nn.Sequential(*layers)
 
         if stride != 1:
             self.shortcut = Conv_Block(in_channel, channel, 1, stride, bn, None)
-            # shortcut = [conv(in_channel, channel, 1, stride, bias=not bn)]
-            # shortcut += [nn.BatchNorm2d(channel)] if bn else []
         else:
             self.shortcut = nn.Identity()
-
-        # self.shortcut = nn.Sequential(*shortcut)
 
         if activation=='relu':
             self.activation = nn.ReLU()
@@ -36,6 +27,7 @@ class ResBlock(nn.Module):
     def forward(self, x):
         out = self.layers(x)
         shortcut = self.shortcut(x)
+        
         out += shortcut
         out = self.activation(out)
         return out
@@ -54,15 +46,14 @@ class ResNet(nn.Module):
                 in_channel = layers[-1].channel
 
         layers += [nn.AdaptiveAvgPool2d((1,1))]
+        layers += [nn.Flatten()]
+        layers += [nn.Linear(in_channel, n_classes)]
 
         self.layers = nn.Sequential(*layers)
-        self.linear = nn.Linear(in_channel, n_classes)
 
     def forward(self, x):
-        batch_size, height, width, channels = x.size()
         out = x.permute(0,3,1,2).contiguous()
         out = self.layers(out)
-        out = self.linear(out.view(batch_size, -1))
         return out
 
 def ResNet18(channel, n_classes, in_channel):

@@ -27,4 +27,5 @@ model, start_epoch, best_recall, recalls = load_model(args.dataset, args.model, 
                                                       image_size=args.image_size, load=args.load)
 model.to(Device)
 # save_recall(args.dataset, args.model, recalls)
-torchsummary.summary(model, (64, 64, 3))
+
+torchsummary.summary(model, tuple(args.image_size + [3]))

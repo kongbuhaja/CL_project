@@ -30,15 +30,14 @@ class DarkNetTiny(nn.Module):
             layers += [nn.MaxPool2d((2,2), 2)]
         
         layers += [nn.AdaptiveAvgPool2d((1,1))]
+        layers += [nn.Flatten()]
+        layers += [nn.Linear(in_channel, n_classes)]
 
         self.layers = nn.Sequential(*layers)
-        self.linear = nn.Linear(in_channel, n_classes)
 
     def forward(self, x):
-        batch_size, height, width, channels = x.size()
         out = x.permute(0,3,1,2).contiguous()
         out = self.layers(out)
-        out = self.linear(out.view(batch_size, -1))
         return out
 
 def DarkNet19(channel, n_classes, in_channel):

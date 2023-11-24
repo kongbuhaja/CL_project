@@ -90,6 +90,6 @@ def save_dataset(data_name, train_dataset, val_dataset, path='data'):
     for task in ['train', 'val']:
         indices = [0] * len(labels)
         dataset = train_dataset if task=='train' else val_dataset
-        for img, label in zip(dataset.data.numpy(), dataset.targets):
+        for img, label in zip(np.array(dataset.data), dataset.targets):
             cv2.imwrite(f'{path}/{task}/{int(label)}/{indices[label]}.jpg', img)
             indices[label] += 1

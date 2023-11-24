@@ -32,8 +32,8 @@ epochs = args.epochs
 train_iters = train_dataset.length//args.batch_size
 val_iters = val_dataset.length//args.batch_size
 
-optimizer = torch.optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
-scheduler = LR_schedular(optimizer, 'linear')
+optimizer = torch.optim.SGD(model.parameters(), lr=args.init_lr, momentum=0.9)
+scheduler = LR_schedular(optimizer, args.lr_schedular)
 loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
 
 for epoch in range(start_epoch+1, epochs+1):
@@ -44,7 +44,7 @@ for epoch in range(start_epoch+1, epochs+1):
         pred = model(x_data.to(Device))
         loss = loss_fn(pred, y_data[..., 0].to(Device))
         loss.backward()
-        scheduler.step(epoch*train_iters+iter, epochs*train_iters, args.lr/100)
+        scheduler.step(epoch*train_iters+iter, epochs*train_iters)
 
         train_loss += loss.item()
         print(f'epoch: {epoch}/{epochs}, iter: {iter+1}/{train_iters} | lr: {scheduler.lr:.4f}, total_loss: {train_loss/(iter+1):.4f}', flush=True, end='\r',)

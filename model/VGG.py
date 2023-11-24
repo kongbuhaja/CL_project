@@ -33,7 +33,7 @@ class VGG(nn.Module):
 
         layers += [nn.Flatten()]
 
-        layers += [FC_Block(layers[-1].channel * flat_channel, channel * mul * 4, activation)]
+        layers += [FC_Block(layers[-3].channel * flat_channel, channel * mul * 4, activation)]
         layers += [FC_Block(layers[-1].channel, channel * mul * 4, activation)]
         layers += [FC_Block(layers[-1].channel, n_classes, activation)]
 
