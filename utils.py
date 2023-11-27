@@ -25,7 +25,7 @@ def arg_parse():
     args = parser.parse_args()
     
     args.image_size = [int(l) for l in args.image_size.split('x')]
-    args.load = bool(args.load)
+    args.load = args.load in ['True', 'true', 'T', 't']
 
     return args
 
