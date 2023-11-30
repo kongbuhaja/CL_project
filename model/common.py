@@ -8,13 +8,25 @@ import math
 import torch
 import torch.nn as nn
 
-def Xavier(m):
-    if m.__class__.__name__ == 'Linear':
-        fan_in, fan_out = m.weight.data.size(1), m.weight.data.size(0)
-        std = 1.0 * math.sqrt(2.0 / (fan_in + fan_out))
-        a = math.sqrt(3.0) * std
-        m.weight.data.uniform_(-a, a)
-        m.bias.data.fill_(0.0)
+def initializer(layers, fn='he_normal'):
+    if fn=='he_normal':
+        init_fn = nn.init.kaiming_normal_
+    elif fn=='he_uniform':
+        init_fn = nn.init.kaiming_uniform_
+    elif fn=='xavier_normal':
+        init_fn = nn.init.xavier_normal_
+    elif fn=='xavier_uniform':
+        init_fn = nn.init.xavier_uniform_
+
+    for layer in layers:
+        if isinstance(layer, nn.Conv2d):
+            init_fn(layer.weight.data)
+            if not layer.bias == None:
+                layer.bias.data.fill_(0)
+        elif isinstance(layer, nn.Linear):
+            init_fn(layer.weight.data)
+            if not layer.bias == None:
+                layer.bias.data.fill_(0)
 
 def conv(in_planes, out_planes, kernel_size=3, stride=1, bias=False):
     return nn.Conv2d(in_planes, out_planes, kernel_size=kernel_size, stride=stride,
@@ -41,12 +53,14 @@ class Conv_Block(nn.Module):
 
         self.layers = nn.Sequential(*layers)
 
+        initializer(self.layers)
+
     def forward(self, x):
         out = self.layers(x)
         return out
     
 class FC_Block(nn.Module):
-    def __init__(self, in_channel, channel, activation):
+    def __init__(self, in_channel, channel, activation=''):
         super().__init__()
         self.channel = channel
 
@@ -56,6 +70,8 @@ class FC_Block(nn.Module):
             layers += [nn.ReLU()]
 
         self.layers = nn.Sequential(*layers)
+
+        initializer(self.layers)
     
     def forward(self, x):
         out = self.layers(x)

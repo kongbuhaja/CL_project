@@ -59,7 +59,7 @@ class GoogleNet(nn.Module):
 
         layers += [nn.Flatten()]
         layers += [nn.Dropout(0.4)]
-        layers += [nn.Linear(layers[-4].channel, n_classes)]
+        layers += [FC_Block(layers[-4].channel, n_classes)]
         
         self.layers = nn.Sequential(*layers)
 

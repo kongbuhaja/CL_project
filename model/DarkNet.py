@@ -31,7 +31,7 @@ class DarkNetTiny(nn.Module):
         
         layers += [nn.AdaptiveAvgPool2d((1,1))]
         layers += [nn.Flatten()]
-        layers += [nn.Linear(in_channel, n_classes)]
+        layers += [FC_Block(in_channel, n_classes)]
 
         self.layers = nn.Sequential(*layers)
 
