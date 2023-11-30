@@ -5,6 +5,7 @@ import os, shutil, cv2
 import numpy as np
 from data.augmentation import *
 from torchvision import transforms
+import sys
 
 
 # need to make transform
@@ -13,12 +14,14 @@ class Custom_Dataset(Dataset):
         self.image_size = image_size
         self.images = []
         self.labels = []
-        for label in os.listdir(path):
-            files = list(map(lambda file: f'{path}/{label}/{file}', os.listdir(f'{path}/{label}')))
+        self.classes = os.listdir(path)
+        self.unique_labels = [l for l in range(len(self.classes))]
+
+        for label, c in enumerate(self.classes):
+            files = list(map(lambda file: f'{path}/{c}/{file}', os.listdir(f'{path}/{c}')))
             self.images += files
             self.labels += [[int(label)]] * len(files)
 
-        self.unique_labels = np.unique(self.labels).tolist()
         self.length = len(self.images)
 
         if transfrom:
@@ -60,20 +63,33 @@ def download_dataset(data_name, path):
         from_datasets = datasets.MNIST
     elif data_name=='imagenet':
         from_datasets = datasets.ImageNet
-        # to be continue
     elif data_name=='cifar100':
         from_datasets = datasets.CIFAR100
 
-    train_dataset = from_datasets(root=path,
-                                download=True,
-                                transform = transforms.ToTensor())
-    val_dataset = from_datasets(root=path,
-                                train = False,
-                                download=True,
-                                transform = transforms.ToTensor())
-    save_dataset(data_name, train_dataset, val_dataset, path=path)
+    if data_name in ['mnist', 'cifar100']:
+        train_dataset = from_datasets(root=path,
+                                    download=True,
+                                    transform = transforms.ToTensor())
+        val_dataset = from_datasets(root=path,
+                                    train = False,
+                                    download=True,
+                                    transform = transforms.ToTensor())
+        save_dataset(data_name, train_dataset, val_dataset, path)
+    elif data_name=='imagenet':
+        if not os.path.exists(f'{path}_RAW'):
+            os.makedirs(f'{path}_RAW')
+            print('You need download imagenet dataset directly in {path}_RAW')
+            sys.exit(0)
+        train_dataset = from_datasets(root=f'{path}_RAW',
+                                      split='train',
+                                      transform = transforms.ToTensor())
+        val_dataset = from_datasets(root=f'{path}_RAW',
+                                    split='val',
+                                    transform = transforms.ToTensor())
+        save_imagenet(train_dataset, val_dataset, path)
+    
 
-def save_dataset(data_name, train_dataset, val_dataset, path='data'):
+def save_dataset(data_name, train_dataset, val_dataset, path):
     if data_name in ['mnist', 'cifar100']:
         for dir in os.listdir(path):
             path_ = f'{path}/{dir}'
@@ -82,14 +98,41 @@ def save_dataset(data_name, train_dataset, val_dataset, path='data'):
             else:
                 os.remove(path_)
     
-    labels = torch.unique(torch.Tensor(train_dataset.targets))
+    classes = train_dataset.classes
+    print(classes)
     for task in ['train', 'val']:
-        for label in labels:
-            os.makedirs(f'{path}/{task}/{int(label)}')
+        for c in classes:
+            os.makedirs(f'{path}/{task}/{c}')
+
+    for task, dataset in zip(['train', 'val'], [train_dataset, val_dataset]):
+        indices = [0] * len(classes)
+        for img, label in zip(np.array(dataset.data), dataset.targets):
+            cv2.imwrite(f'{path}/{task}/{classes[label]}/{indices[label]}.jpg', img)
+            indices[label] += 1
+        print(f'{task} data| total:{np.sum(indices)}, mean:{np.mean(indices)}, std:{np.std(indices)}')
+
+def save_imagenet(train_dataset, val_dataset, path):
+    classes = []
+    for c in train_dataset.classes:
+        if c[0] in classes:
+            count = classes.count(c[0])
+            classes += [f'{c[0]}{count+1}']
+        else:
+            classes += [c[0]]
 
     for task in ['train', 'val']:
-        indices = [0] * len(labels)
-        dataset = train_dataset if task=='train' else val_dataset
-        for img, label in zip(np.array(dataset.data), dataset.targets):
-            cv2.imwrite(f'{path}/{task}/{int(label)}/{indices[label]}.jpg', img)
+        for c in classes:
+            os.makedirs(f'{path}/{task}/{c}')
+
+    for task, dataset in zip(['train', 'val'], [train_dataset, val_dataset]):
+        indices = [0] * len(classes)
+        for file, label in dataset.imgs:
+            moved_file = f'{path}/{task}/{classes[label]}/{indices[label]}.jpg'
+            shutil.move(file, moved_file)
             indices[label] += 1
+        print(f'{task} data| total:{np.sum(indices)}, mean:{np.mean(indices)}, std:{np.std(indices)}')
+
+    for dir in os.listdir(f'{path}_RAW'):
+        if os.path.isdir(f'{path}_RAW/{dir}'):
+            shutil.rmtree(f'{path}_RAW/{dir}')
+    

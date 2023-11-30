@@ -1,7 +1,6 @@
 #files
 *.ipynb
 *.log
-multi_train.py
 # test.py
 
 #dir

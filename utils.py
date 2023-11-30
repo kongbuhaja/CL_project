@@ -34,7 +34,6 @@ def arg_print(args):
     print(f'image_size: {args.image_size[0]}x{args.image_size[1]}')
     print(f'batch_size: {args.batch_size}')
     print(f'model: {args.model}')
-    print(f'channel: {args.channel}')
     print(f'loss: {args.loss}')
 
 class LR_schedular:
