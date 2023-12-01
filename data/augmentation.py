@@ -23,20 +23,28 @@ class Padding():
 
 class Resize():
     def __init__(self, new_size):
-        self.new_size = new_size * 2 if len(new_size)==1 else new_size
+        self.new_size = np.array(new_size * 2 if len(new_size)==1 else new_size).astype(np.int32)
 
     def __call__(self, image):
-        return cv2.resize(image, self.new_size)
+        h, w, c = image.shape
+        l = max(h, w)
+        ratio = np.array([h/l, w/l])
+        out_size = (ratio * self.new_size).astype(np.int32)
+        return cv2.resize(image, out_size)
 
 class Random_resize():
-    def __init__(self, minimum=0.7, maximum=1.3):
+    def __init__(self, new_size, minimum=0.7, maximum=1.3):
+        self.new_size = np.array(new_size * 2 if len(new_size)==1 else new_size).astype(np.int32)
         self.min = minimum
         self.max = maximum
 
     def __call__(self, image):
-        new_size = np.tile(np.random.uniform(self.min, self.max , 1), [2,])
-        org_size = image.shape[0:2]
-        return cv2.resize(cv2.resize(image, new_size), org_size)
+        h, w, c = image.shape
+        l = max(h, w)
+        ratio = np.array([h/l, w/l])
+        out_size = (ratio * self.new_size).astype(np.int32)
+        down_size = (ratio * self.new_size * np.tile(np.random.uniform(self.min, self.max , 1), [2,])).astype(np.int32)
+        return cv2.resize(cv2.resize(image, down_size), out_size)
 
 class Rotate90():
     def __init__(self):
@@ -47,15 +55,15 @@ class Rotate90():
             return image
 
         else:
-            n = np.random.uniform(1,4).astype(np.int32)
-            return np.rot90(image, n)
+            n = int(np.random.uniform(1,4))
+            return np.rot90(image, n, axes = (0, 1))
 
 class Random_Vflip():
     def __init__(self):
         pass
     
     def __call__(self, image):
-        if np.random.unifrom(0,1) < 0.5:
+        if np.random.uniform(0,1) < 0.5:
             return image
         
         else:

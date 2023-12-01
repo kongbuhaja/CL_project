@@ -25,11 +25,15 @@ class Custom_Dataset(Dataset):
         self.length = len(self.images)
 
         if transfrom:
-            self.transforms = transforms.Compose([Padding(), 
-                                                  Resize(self.image_size),
+            self.transforms = transforms.Compose([Random_resize(self.image_size),
+                                                  Padding(),
+                                                  Rotate90(),
+                                                  Random_Vflip(),
                                                   Normalization()])
         else:
-            self.transforms = Copy()
+            self.transforms = transforms.Compose([Resize(self.image_size),
+                                                  Padding(),
+                                                  Normalization()])
 
     def __getitem__(self, idx):
         image = cv2.cvtColor(cv2.imread(self.images[idx], cv2.IMREAD_COLOR), cv2.COLOR_BGR2RGB)
@@ -54,7 +58,7 @@ def load_dataset(data_name, image_size, path='data'):
         download_dataset(data_name, path=path)
     
     train_dataset = Custom_Dataset(train_path, image_size)
-    val_dataset = Custom_Dataset(val_path, image_size)
+    val_dataset = Custom_Dataset(val_path, image_size, transfrom=False)
     
     return train_dataset, val_dataset
 
