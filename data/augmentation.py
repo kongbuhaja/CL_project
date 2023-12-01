@@ -28,6 +28,40 @@ class Resize():
     def __call__(self, image):
         return cv2.resize(image, self.new_size)
 
+class Random_resize():
+    def __init__(self, minimum=0.7, maximum=1.3):
+        self.min = minimum
+        self.max = maximum
+
+    def __call__(self, image):
+        new_size = np.tile(np.random.uniform(self.min, self.max , 1), [2,])
+        org_size = image.shape[0:2]
+        return cv2.resize(cv2.resize(image, new_size), org_size)
+
+class Rotate90():
+    def __init__(self):
+        pass
+
+    def __call__(self, image):
+        if np.random.uniform(0,1) < 0.25:
+            return image
+
+        else:
+            n = np.random.uniform(1,4).astype(np.int32)
+            return np.rot90(image, n)
+
+class Random_Vflip():
+    def __init__(self):
+        pass
+    
+    def __call__(self, image):
+        if np.random.unifrom(0,1) < 0.5:
+            return image
+        
+        else:
+            return image[:,::-1]
+
+
 class Normalization():
     def __init__(self):
         pass
