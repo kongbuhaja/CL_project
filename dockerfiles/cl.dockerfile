@@ -33,5 +33,5 @@ RUN echo "== Install Dev Tolls ==" &&\
 
 # githup
 RUN cd /home/ &&\
-    git clone https://github.com/kongbuhaja/CL_project.git
+    git clone https://github.com/kongbuhaja/CL_project.git &&\
     git config --global --add safe.directory /home/CL_project
