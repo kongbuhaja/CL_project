@@ -1,7 +1,7 @@
 # sudo docker build --force-rm -f dockerfiles/cl.dockerfile -t cl:1.0 .
 # sudo apt-get install x11-xserver-utils
 # xhost +
-# sudo docker run --gpus all -it -v /home/dblab/Desktop/CL_project:/home/CL_project --name cl cl:1.0
+# sudo docker run --gpus all --shm-size=128g -it -v /home/hs/ML/CL_project:/home/CL_project --name cl cl:1.0
 
 FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
