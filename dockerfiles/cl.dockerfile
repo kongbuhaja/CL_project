@@ -13,8 +13,8 @@ RUN apt -y update
 
 RUN echo "== Install Basic Tools ==" &&\
     apt install -y --allow-unauthenticated \
-    openssh-server vim nano htop tmux sudo git unzip build-essential iputils-ping net-tools ufw\
-    tqdm \
+    openssh-server vim nano htop tmux sudo git unzip build-essential iputils-ping \
+     net-tools ufw tqdm \
     python3 python3-pip curl dpkg libgtk2.0-dev \
     cmake libwebp-dev ca-certificates gnupg git \
     libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev \
