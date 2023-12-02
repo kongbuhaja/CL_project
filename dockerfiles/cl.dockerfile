@@ -3,6 +3,8 @@
 # xhost +
 # sudo docker run --gpus all -it -v /home/dblab/Desktop/CL_project:/home/CL_project --name cl cl:1.0
 
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
+
 ENV TZ=Asia/Seoul
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $>TZ > /etc/timezone
 
