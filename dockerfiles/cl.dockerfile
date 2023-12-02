@@ -31,5 +31,7 @@ RUN echo "== Install Dev Tolls ==" &&\
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 &&\
     pip3 install opencv-python matplotlib pillow torchsummary tqdm
 
+# githup
 RUN cd /home/ &&\
     git clone https://github.com/kongbuhaja/CL_project.git
+    git config --global --add safe.directory /home/CL_project
