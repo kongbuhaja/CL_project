@@ -1,6 +1,7 @@
-import argparse, torch, os
+import argparse, torch, os, random
+import numpy as np
 
-def arg_parse():
+def args_parse():
     parser = argparse.ArgumentParser(description='base model')
     #environment
     parser.add_argument('--gpus', dest='gpus', type=str, default='0', help='which device do you want to use')
@@ -28,12 +29,10 @@ def arg_parse():
     
     args.image_size = [int(l) for l in args.image_size.split('x')]
     args.load = args.load in ['True', 'true', 'T', 't']
-
-    arg_print(args)
     
     return args
 
-def arg_print(args):
+def args_show(args):
     print(f'dataset: {args.dataset}')
     print(f'image_size: {args.image_size[0]}x{args.image_size[1]}')
     print(f'batch_size: {args.batch_size}')
@@ -41,6 +40,10 @@ def arg_print(args):
     print(f'loss: {args.loss}')
 
 def env_set(gpus):
+    np.random.seed(42)
+    torch.manual_seed(42)
+    random.seed(42)
+
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     os.environ['CUDA_VISIBLE_DEVICES'] = gpus
 
