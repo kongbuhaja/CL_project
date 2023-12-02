@@ -15,7 +15,7 @@ torch.manual_seed(42)
 random.seed(42)
 
 args = arg_parse()
-arg_print(args)
+env_set(args.gpus)
 
 Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

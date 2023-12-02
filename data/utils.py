@@ -103,7 +103,6 @@ def save_dataset(data_name, train_dataset, val_dataset, path):
                 os.remove(path_)
     
     classes = train_dataset.classes
-    print(classes)
     for task in ['train', 'val']:
         for c in classes:
             os.makedirs(f'{path}/{task}/{c}')

@@ -1,8 +1,10 @@
-import argparse
-import torch
+import argparse, torch, os
 
 def arg_parse():
     parser = argparse.ArgumentParser(description='base model')
+    #environment
+    parser.add_argument('--gpus', dest='gpus', type=str, default='0', help='which device do you want to use')
+
     #model
     parser.add_argument('--model', dest='model', type=str, default='DarkNet19', help='model to train')
     parser.add_argument('--channel', dest='channel', type=int, default=16, help='channel of basis layers')
@@ -27,6 +29,8 @@ def arg_parse():
     args.image_size = [int(l) for l in args.image_size.split('x')]
     args.load = args.load in ['True', 'true', 'T', 't']
 
+    arg_print(args)
+    
     return args
 
 def arg_print(args):
@@ -35,6 +39,10 @@ def arg_print(args):
     print(f'batch_size: {args.batch_size}')
     print(f'model: {args.model}')
     print(f'loss: {args.loss}')
+
+def env_set(gpus):
+    os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
+    os.environ['CUDA_VISIBLE_DEVICES'] = gpus
 
 class LR_schedular:
     def __init__(self, optimizer, schedule):
