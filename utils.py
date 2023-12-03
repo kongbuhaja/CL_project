@@ -5,6 +5,7 @@ def args_parse():
     parser = argparse.ArgumentParser(description='base model')
     #environment
     parser.add_argument('--gpus', dest='gpus', type=str, default='0', help='which device do you want to use')
+    parser.add_argument('--cpus', dest='cpus', type=int, default=4, help='num of cpus for dataloader')
 
     #model
     parser.add_argument('--model', dest='model', type=str, default='DarkNet19', help='model to train')

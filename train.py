@@ -13,8 +13,8 @@ env_set(args.gpus)
 Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
-train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=4)
-val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=4)
+train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=args.cpus)
+val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=args.cpus)
 
 model, start_epoch, best_recall, recalls = load_model(args.dataset, args.model, channel=args.channel, 
                                                       nclasses=len(train_dataset.unique_labels),

@@ -16,7 +16,7 @@ def main():
     Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
-    val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, drop_last=True)
+    val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, drop_last=False)
 
     model, start_epoch, best_recall, recalls = load_model(args.dataset, args.model, channel=args.channel, 
                                                         nclasses=len(train_dataset.unique_labels),
