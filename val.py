@@ -10,7 +10,7 @@ from utils import *
 def main():
     args = args_parse()
     args.batch_size = 1
-    args_show(args)
+    args_show(args, train=False)
     env_set(args.gpus)
 
     Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

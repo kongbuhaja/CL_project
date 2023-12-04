@@ -33,7 +33,7 @@ def args_parse():
     
     return args
 
-def args_show(args, length=100, train=False):
+def args_show(args, length=100, train=True):
     l = (length - 10) // 3
 
     print(f'=' * length)
