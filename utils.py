@@ -14,7 +14,6 @@ def args_parse():
     
     #train
     parser.add_argument('--epochs', dest='epochs', type=int, default=20, help='epochs for training')
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=400, help='batch_size for training or inference')
     parser.add_argument('--loss' , dest='loss', type=str, default='CE', help='function to train model')
     parser.add_argument('--init_lr', dest='init_lr', type=float, default=1e-2, help='init learning rate for training')
     parser.add_argument('--lr_schedular', dest='lr_schedular', type=str, default='linear', help='learning rate scheduler')
@@ -25,6 +24,7 @@ def args_parse():
     #dataset
     parser.add_argument('--dataset', dest='dataset', type=str, default='mnist', help='dataset for training')
     parser.add_argument('--image_size', dest='image_size', type=str, default='256x256', help='dataset for training')
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=400, help='batch_size for training or inference')
 
     args = parser.parse_args()
     
@@ -33,12 +33,24 @@ def args_parse():
     
     return args
 
-def args_show(args):
-    print(f'dataset: {args.dataset}')
-    print(f'image_size: {args.image_size[0]}x{args.image_size[1]}')
-    print(f'batch_size: {args.batch_size}')
-    print(f'model: {args.model}')
-    print(f'loss: {args.loss}')
+def args_show(args, length=70, train=True):
+    print(f'=' * length)
+    
+    print(f'‖{"Environment":-^{length-2}}‖')
+    print(f'| {"gpus: "+str(args.gpus):<{20}} | {"cpus: "+str(args.cpus):<{20}} | {" ":<{20}} |')
+
+    print(f'‖{"Train" if train else "Val":-^{length-2}}‖')
+    print(f'| {"epochs: "+str(args.epochs):<{20}} | {"loss: "+args.loss:<{20}} | {" ":<{20}} |')
+    if train:
+        print(f'| {"lr_schedular: "+args.lr_schedular:<{20}} | {"init_lr: "+str(args.init_lr):<{20}} | {" ":<{20}} |')
+    
+    print(f'‖{"Model":-^{length-2}}‖')
+    print(f'| {"model: "+args.model:<{20}} | {"channel: "+args.channel:<{20}} | {"load: "+str(args.load):<{20}} |')
+
+    print(f'‖{"Dataset":-^{length-2}}‖')
+    print(f'| {"dataset: "+args.dataset:<{20}} | {"image_size: "+args.image_size:<{20}} | {"batch_size: "+str(args.batch_size):<{20}} |')
+
+    print(f'=' * length)
 
 def env_set(gpus):
     np.random.seed(42)
