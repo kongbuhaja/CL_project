@@ -33,17 +33,18 @@ def args_parse():
     
     return args
 
-def args_show(args, length=100, train=True):
+def args_show(args, length=100, train=False):
     l = (length - 10) // 3
+
     print(f'=' * length)
+    
     print(f'‖{"Environment":-^{length-2}}‖')
     print(f'| {"gpus: "+str(args.gpus):<{l}} | {"cpus: "+str(args.cpus):<{l}} | {" ":<{l}} |')
 
     print(f'‖{"Train" if train else "Val":-^{length-2}}‖')
-    print(f'| {"epochs: "+str(args.epochs):<{l}} | {"loss: "+args.loss:<{l}} | {" ":<{l}} |')
-    if train:
-        print(f'| {"lr_schedular: "+args.lr_schedular:<{l}} | {"init_lr: "+str(args.init_lr):<{l}} | {" ":<{l}} |')
-    
+    print(f'| {"epochs: "+str(args.epochs):<{l}} | {"lr_schedular: "+args.lr_schedular:<{l}} | {"init_lr: "+str(args.init_lr):<{l}} |') if train else print('',end='')
+    print(f'| {"loss: "+args.loss:<{l}} | {" ":<{l}} | {" ":<{l}} |')
+
     print(f'‖{"Model":-^{length-2}}‖')
     print(f'| {"model: "+args.model:<{l}} | {"channel: "+str(args.channel):<{l}} | {"load: "+str(args.load):<{l}} |')
 
