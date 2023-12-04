@@ -33,22 +33,22 @@ def args_parse():
     
     return args
 
-def args_show(args, length=70, train=True):
+def args_show(args, length=100, train=True):
+    l = (length - 10) // 3
     print(f'=' * length)
-    
     print(f'‖{"Environment":-^{length-2}}‖')
-    print(f'| {"gpus: "+str(args.gpus):<{20}} | {"cpus: "+str(args.cpus):<{20}} | {" ":<{20}} |')
+    print(f'| {"gpus: "+str(args.gpus):<{l}} | {"cpus: "+str(args.cpus):<{l}} | {" ":<{l}} |')
 
     print(f'‖{"Train" if train else "Val":-^{length-2}}‖')
-    print(f'| {"epochs: "+str(args.epochs):<{20}} | {"loss: "+args.loss:<{20}} | {" ":<{20}} |')
+    print(f'| {"epochs: "+str(args.epochs):<{l}} | {"loss: "+args.loss:<{l}} | {" ":<{l}} |')
     if train:
-        print(f'| {"lr_schedular: "+args.lr_schedular:<{20}} | {"init_lr: "+str(args.init_lr):<{20}} | {" ":<{20}} |')
+        print(f'| {"lr_schedular: "+args.lr_schedular:<{l}} | {"init_lr: "+str(args.init_lr):<{l}} | {" ":<{l}} |')
     
     print(f'‖{"Model":-^{length-2}}‖')
-    print(f'| {"model: "+args.model:<{20}} | {"channel: "+args.channel:<{20}} | {"load: "+str(args.load):<{20}} |')
+    print(f'| {"model: "+args.model:<{l}} | {"channel: "+str(args.channel):<{l}} | {"load: "+str(args.load):<{l}} |')
 
     print(f'‖{"Dataset":-^{length-2}}‖')
-    print(f'| {"dataset: "+args.dataset:<{20}} | {"image_size: "+args.image_size:<{20}} | {"batch_size: "+str(args.batch_size):<{20}} |')
+    print(f'| {"dataset: "+args.dataset:<{l}} | {"image_size: "+str(args.image_size):<{l}} | {"batch_size: "+str(args.batch_size):<{l}} |')
 
     print(f'=' * length)
 
