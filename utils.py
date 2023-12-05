@@ -39,7 +39,7 @@ def args_show(args, length=100, train=True):
     print(f'=' * length)
     
     print(f'‖{"Environment":-^{length-2}}‖')
-    print(f'| {"gpus: "+str(args.gpus):<{l}} | {"cpus: "+str(args.cpus):<{l}} | {" ":<{l}} |')
+    print(f'| {"gpus: "+str(len(args.gpus.split(","))):<{l}} | {"cpus: "+str(args.cpus):<{l}} | {" ":<{l}} |')
 
     print(f'‖{"Train" if train else "Val":-^{length-2}}‖')
     print(f'| {"epochs: "+str(args.epochs):<{l}} | {"lr_schedular: "+args.lr_schedular:<{l}} | {"init_lr: "+str(args.init_lr):<{l}} |') if train else print('',end='')
