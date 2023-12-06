@@ -48,7 +48,7 @@ def args_show(args, length=100, train=True):
     print(f'‖{"Model":-^{length-2}}‖')
     print(f'| {"model: "+args.model:<{l}} | {"channel: "+str(args.channel):<{l}} | {"load: "+str(args.load):<{l}} |')
 
-    print(f'‖{"Dataset":-^{length-2}}‖')
+    print(f'‖{"Data":-^{length-2}}‖')
     print(f'| {"dataset: "+args.dataset:<{l}} | {"image_size: "+str(args.image_size):<{l}} | {"batch_size: "+str(args.batch_size):<{l}} |')
 
     print(f'=' * length)

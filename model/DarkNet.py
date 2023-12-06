@@ -24,14 +24,20 @@ class DarkNetTiny(nn.Module):
         super().__init__()
         
         layers = []
-        for n_block, mul, stride in zip(n_blocks, muls, strides):
+        for n_block, mul, stride in zip(n_blocks[:-1], muls[:-1], strides[:-1]):
             layers += [DarkNetBlock(in_channel, channel * mul, n_block, stride=stride, activation=activation)]
             in_channel = layers[-1].channel
             layers += [nn.MaxPool2d((2,2), 2)]
-        
+        layers += [DarkNetBlock(in_channel, channel * muls[-1], n_blocks[-1], stride=strides[-1], activation=activation)]
+        in_channel = layers[-1].channel
+
+        layers += [Conv_Block(in_channel, n_classes, 1, 1, False, activation)]
         layers += [nn.AdaptiveAvgPool2d((1,1))]
         layers += [nn.Flatten()]
-        layers += [FC_Block(in_channel, n_classes)]
+
+        # layers += [nn.AdaptiveAvgPool2d((1,1))]
+        # layers += [nn.Flatten()]
+        # layers += [FC_Block(in_channel, n_classes)]
 
         self.layers = nn.Sequential(*layers)
 

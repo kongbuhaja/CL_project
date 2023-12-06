@@ -5,7 +5,7 @@ import numpy as np
 
 from model.DarkNet import DarkNet19
 from model.ResNet import ResNet18
-from model.VGG import VGG19
+from model.VGG import VGG19, VGG16
 from model.GoogleNet import GoogleNet22
 from model.MLP import MLP
 from checkpoints.utils import dir_check
@@ -15,6 +15,8 @@ def Model(model_name, channel, n_classes, image_size, in_channel):
         model = DarkNet19(channel, n_classes, in_channel)
     elif model_name == 'ResNet18':
         model = ResNet18(channel, n_classes, in_channel)
+    elif model_name == 'VGG16':
+        model = VGG16(channel, n_classes, image_size, in_channel)
     elif model_name == 'VGG19':
         model = VGG19(channel, n_classes, image_size, in_channel)
     elif model_name == 'GoogleNet22':
