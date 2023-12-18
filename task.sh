@@ -33,4 +33,4 @@ task() {
     wait_for_completion "$1" "$2" "$3"
 }
 
-task train ResNet18 mnist
+task val ResNet18 mnist

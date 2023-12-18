@@ -14,7 +14,7 @@ class Custom_Dataset(Dataset):
         self.image_size = image_size
         self.images = []
         self.labels = []
-        self.classes = os.listdir(path)
+        self.classes = sorted(os.listdir(path))
         self.unique_labels = [l for l in range(len(self.classes))]
 
         for label, c in enumerate(self.classes):
