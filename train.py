@@ -26,7 +26,7 @@ train_iters = len(train_dataloader)
 
 if args.optimizer == 'SGD':
     optimizer = torch.optim.SGD(model.parameters(), lr=args.init_lr)
-elif args.optimizer == 'momentum':
+elif args.optimizer == 'Momentum':
     optimizer = torch.optim.SGD(model.parameters(), lr=args.init_lr, momentum=0.9)
 elif args.optimizer == 'Adam':
     optimizer = torch.optim.Adam(model.parameters(), lr=args.init_lr)
