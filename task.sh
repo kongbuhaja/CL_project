@@ -18,12 +18,12 @@
 # python3 train.py --model VGG19 --channel 64 --epochs 500 --eval_term 5 --dataset imagenet --batch_size 100
 # python3 train.py --model GoogleNet22 --channel 64 --epochs 500 --eval_term 5 --dataset imagenet --batch_size 100
 start_background_task() {
-    nohup python3 "$1.py --model $2 --channel 64 --eval_term 5 --dataset $4 --optimizer SGD > $2.log" 2>&1 &
+    nohup python3 "$1.py --model $2 --channel 64 --eval_term 5 --dataset $3 --optimizer SGD > $2.log" 2>&1 &
 }
 
 # 대기 함수
 wait_for_completion() {
-    while pgrep -f "python3 $1.py --model ResNet18 --channel 16 --eval_term 5 --dataset $3 --optimizer $2" > /dev/null; do
+    while pgrep -f "python3 $1.py --model $2 --channel 64 --eval_term 5 --dataset $3 --optimizer SGD" > /dev/null; do
         sleep 1
     done
 }
