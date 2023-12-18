@@ -8,7 +8,7 @@ from model.ResNet import ResNet18
 from model.VGG import VGG19, VGG16
 from model.GoogleNet import GoogleNet22
 from model.MLP import MLP
-from checkpoints.utils import dir_check
+from utils import dir_check
 
 def Model(model_name, channel, n_classes, image_size, in_channel):
     if model_name == 'DarkNet19':
@@ -26,9 +26,7 @@ def Model(model_name, channel, n_classes, image_size, in_channel):
 
     return model
 
-def save_model(model, dataset_name, model_name, epoch, recall):
-    path = dir_check(dataset_name, model_name)
-    
+def save_model(model, path, epoch, recall):  
     model_path = f'{path}/model.pt'
     info_path = f'{path}/model.info'
     torch.save(model, model_path)
@@ -38,13 +36,16 @@ def save_model(model, dataset_name, model_name, epoch, recall):
         f.write(text)
     print(f'Success to save model in {model_path}')
 
-def load_model(dataset_name, model_name, channel, nclasses, image_size, in_channel=3, load=False):
-    dir = f'./checkpoints/{dataset_name}/{model_name}/'
-    model_path = dir + 'model.pt'
-    info_path = dir + 'model.info'
-    recall_path = dir + 'recall.txt'
-    try:
-        if load:
+def load_model(dataset_name, optimizer, model_name, channel, nclasses, image_size, in_channel=3, load=False, checkpoint='checkpoints'):
+    dir = dir_check(f'{checkpoint}/{dataset_name}/{optimizer}/{model_name}')
+    dir_check(f'{dir}/result')
+
+    model_path = dir + '/model.pt'
+    info_path = dir + '/model.info'
+    recall_path = dir + '/result/recall.txt'
+
+    if load:
+        try:
             model = torch.load(model_path)
             with open(info_path, 'r') as f:
                 text = f.readlines()
@@ -56,43 +57,61 @@ def load_model(dataset_name, model_name, channel, nclasses, image_size, in_chann
             recalls = [float(r) for r in text.split(' ')[:-1]]
 
             print(f'Success to load model from {model_path}')
-            return model, *result, recalls
-    except:
-        print(f'Fail to load model from {model_path}, So ', end='')
+            return model, *result, recalls, dir
+        except:
+            print(f'Fail to load model from {model_path}, So ', end='')
 
     print(f'Create {model_name} model')
     model = Model(model_name, channel, nclasses, image_size, in_channel)
-    return model, *[0, 0.], []
+    return model, *[0, 0.], [], dir
 
-def save_recall(dataset_name, model_name, recalls, eval_term, save_dir='checkpoints'):
-    epochs = [e*eval_term for e in range(1, len(recalls)+1)]
-    dir_path = f'{save_dir}/{dataset_name}/{model_name}' 
+def save_recall(path, recalls, term):
+    path += '/result'
 
-    if save_dir=='checkpoints':
-        with open(f'{dir_path}/recall.txt', 'w') as f:
-            for r in recalls:
-                f.write(f'{r} ')
+    with open(f'{path}/recall.txt', 'w') as f:
+        for r in recalls:
+            f.write(f'{r} ')
+    
+    dirs = path.split('/')
+    save_graph('recall', path, recalls, term, f'{dirs[-4]} X {dirs[-3]} X {dirs[-2]}', 'top')
+
+def save_loss(path, losses, term):
+    path += '/result'
+
+    dirs = path.split('/')
+    save_graph('loss_train', path, losses[0], 1, f'{dirs[-4]} X {dirs[-3]} X {dirs[-2]}', 'bottom')
+    if len(losses[0])/term == len(losses[1]):
+        save_graph('loss_eval', path, losses[1], term, f'{dirs[-4]} X {dirs[-3]} X {dirs[-2]}', 'bottom')
+
+def save_graph(task, dir_path, values, term, title, highlight='top'):
+    epochs = [e for e in range(1, len(values)+1)]
+    stamp = max(epochs[-1]//10, 1)
+    xticks = [str(e*term)if e%stamp==0 else '' for e in epochs]
+
     plt.clf()
-    plt.xlabel('epochs')
-    plt.xticks(epochs)
-    plt.ylabel('recall')
-    plt.title(f'{dataset_name} X {model_name}')
-    
-    width = epochs[-1]
-    height = max(recalls)-min(recalls)
-    
-    max_idx = np.argmax(recalls, -1)
-    min_idx = np.argmin(recalls, -1)
-    plt.text(epochs[max_idx]-width/16, recalls[max_idx]+height/len(recalls)*2*0.01, f'{recalls[max_idx]:.5f}')
-    plt.text(epochs[min_idx]-width/16, recalls[min_idx]+height/len(recalls)*2*0.01, f'{recalls[min_idx]:.5f}')
+    plt.xlabel('epoch')
+    plt.xticks(epochs,xticks)
+    plt.ylabel(task)
+    plt.title(title)
 
-    plt.plot(epochs, recalls)
-    highlight = patches.Ellipse((epochs[max_idx]-width/16*0.22, recalls[max_idx] + height*2*0.01), 
-                                 width = width/6,
-                                 height = height/7*0.5,
-                                 edgecolor = 'red', 
-                                 linestyle = 'dotted',
-                                 linewidth = 2,
-                                 fill = False)
-    plt.gca().add_patch(highlight)
-    plt.savefig(f'{dir_path}/recall.jpg')
+    width = epochs[-1]
+    height = max(values) - min(values)
+
+    max_idx = np.argmax(values, -1)
+    min_idx = np.argmin(values, -1)
+    plt.text(epochs[max_idx]-width/16, values[max_idx]+height/len(values)*2*0.01, f'{values[max_idx]:.5f}')
+    plt.text(epochs[min_idx]-width/16, values[min_idx]+height/len(values)*2*0.01, f'{values[min_idx]:.5f}')
+
+    plt.plot(epochs, values)
+    if highlight:
+        idx = max_idx if highlight=='top' else min_idx
+        circle = patches.Ellipse((epochs[idx]-width/16*0.22, values[idx] + height*2*0.01), 
+                                width = width/6,
+                                height = height/7*0.5,
+                                edgecolor = 'red', 
+                                linestyle = 'dotted',
+                                linewidth = 2,
+                                fill = False)
+        plt.gca().add_patch(circle)
+    
+    plt.savefig(f'{dir_path}/{task}.jpg')

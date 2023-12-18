@@ -5,7 +5,6 @@
 
 #dir
 /checkpoints/*
-!/checkpoints/utils.py
 /data/*
 !/data/augmentation.py
 !/data/utils.py

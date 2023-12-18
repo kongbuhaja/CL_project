@@ -18,13 +18,13 @@ def main():
     train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
     val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, drop_last=False)
 
-    model, start_epoch, best_recall, recalls = load_model(args.dataset, args.model, channel=args.channel, 
+    model, start_epoch, best_recall, recalls = load_model(args.dataset, args.optimizer, args.model, channel=args.channel, 
                                                         nclasses=len(train_dataset.unique_labels),
                                                         image_size=args.image_size, load=True)
+    model.to(Device)
+
     loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
-
-    val_iters = len(val_dataloader)
-
+    
     test_x_data = []
     test_p_data = []
     test_y_data = []
@@ -33,8 +33,8 @@ def main():
     with torch.no_grad():
         positive = 0
         val_loss = 0.
-        val_tqdm = tqdm.tqdm(val_dataloader, total=len(val_dataloader), ncols=120, desc=f'Validation', ascii=' =', colour='blue')
-        for iter, (x_data, y_data) in enumerate(val_dataloader):
+        val_tqdm = tqdm.tqdm(val_dataloader, total=len(val_dataloader), ncols=121, desc=f'Validation', ascii=' =', colour='blue')
+        for iter, (x_data, y_data) in enumerate(val_tqdm):
             pred = model(x_data.to(Device))
             loss = loss_fn(pred, y_data[..., 0].to(Device))
 
@@ -49,8 +49,8 @@ def main():
                 test_x_data += [x_data[0].to('cpu').numpy()]
                 test_p_data += [pred_label[0].to('cpu').numpy()]
                 test_y_data += [y_data[0][0].to('cpu').numpy()]
-
-            val_tqdm.set_postfix_str(f'| iter: {iter+1}/{val_iters} | recall: {recall:.3f}, val_loss: {val_loss/(iter+1):.4f}')
+            
+            val_tqdm.set_postfix_str(f'| recall: {recall:.3f}, val_loss: {val_loss/(iter+1):.4f}')
     
     row = None
     output = None
@@ -79,12 +79,11 @@ def main():
     cv2.imwrite(f'{output_dir}/output.jpg', output)
 
 def eval(model, val_dataloader, loss_fn, Device):
-    val_iters = len(val_dataloader)
     model.eval()
     with torch.no_grad():
         positive = 0
         val_loss = 0.
-        val_tqdm = tqdm.tqdm(val_dataloader, total=len(val_dataloader), ncols=120, desc=f'Validation', ascii=' =', colour='blue')
+        val_tqdm = tqdm.tqdm(val_dataloader, total=len(val_dataloader), ncols=121, desc=f'Validation', ascii=' =', colour='blue')
         for iter, (x_data, y_data) in enumerate(val_tqdm):
             pred = model(x_data.to(Device))
             loss = loss_fn(pred, y_data[..., 0].to(Device))
@@ -94,8 +93,8 @@ def eval(model, val_dataloader, loss_fn, Device):
             pred_label = torch.argmax(pred, -1).to('cpu')
             positive += sum(pred_label == y_data[..., 0])
             recall = positive/((iter+1)*val_dataloader.batch_size)
-            val_tqdm.set_postfix_str(f'| iter: {iter+1}/{val_iters} | recall: {recall:.3f}, val_loss: {val_loss/(iter+1):.4f}')
-    return recall.numpy()
+            val_tqdm.set_postfix_str(f'| recall: {recall:.3f}, val_loss: {val_loss/(iter+1):.4f}')
+    return recall.numpy(), val_loss/(iter+1)
 
 if __name__ == '__main__':
     main()

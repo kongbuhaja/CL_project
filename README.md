@@ -9,7 +9,7 @@
 ### Model
 - [x] Resnet18  
 - [x] Darknet19  
-- [ ] Googlenet22  
+- [x] Googlenet22  
 - [x] VGG19  
   
 ### Task  

@@ -5,7 +5,6 @@ from model.common import *
 class DarkNetBlock(nn.Module):
     def __init__(self, in_channel, channel, n_layers, kernel_size=3, stride=1, bn=True, activation='relu'):
         super().__init__()
-        self.channel = channel
 
         layers = []
         for s, k in zip([stride] + [1] * (n_layers-1), [kernel_size, 1] * (n_layers//2) + [kernel_size]):
@@ -14,7 +13,8 @@ class DarkNetBlock(nn.Module):
             in_channel = c
 
         self.layers = nn.Sequential(*layers)
-
+        self.channel = in_channel
+        
     def forward(self, x):
         out = self.layers(x)
         return out
