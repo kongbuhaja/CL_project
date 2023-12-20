@@ -4,7 +4,7 @@ start_background_task() {
 
 # 대기 함수
 wait_for_completion() {
-    while pgrep -f "python3 $1.py --model ResNet18 --channel 16 --eval_term 5 --dataset $3 --optimizer $2" --laod True > /dev/null; do
+    while pgrep -f "python3 $1.py --model ResNet18 --channel 16 --eval_term 5 --dataset $3 --optimizer $2 --load True" > /dev/null; do
         sleep 1
     done
 }
