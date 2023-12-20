@@ -1,0 +1,10 @@
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer SGD 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer momentum 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer Adam 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer Adadelta 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer Adagrad 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer AdamW 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer NAdam 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer RAdam 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer RMSprop 
+python3 val.py --model ResNet18 --channel 16 --dataset cifar100 --optimizer Rprop 

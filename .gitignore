@@ -1,0 +1,12 @@
+#files
+*.ipynb
+*.log
+# test.py
+
+#dir
+/checkpoints/*
+/data/*
+!/data/augmentation.py
+!/data/utils.py
+/**/__pycache__
+/output
