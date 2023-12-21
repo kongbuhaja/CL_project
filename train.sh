@@ -18,7 +18,7 @@ task train SGD cifar100
 task train Momentum cifar100
 task train Adam cifar100
 task train Adadelta cifar100
-# task train Adagrad cifar100
+task train Adagrad cifar100
 # task train AdamW cifar100
 # task train NAdam cifar100
 # task train RAdam cifar100

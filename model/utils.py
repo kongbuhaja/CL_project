@@ -36,7 +36,7 @@ def save_model(model, path, epoch, recall):
         f.write(text)
     print(f'Success to save model in {model_path}')
 
-def load_model(dataset_name, optimizer, model_name, channel, nclasses, image_size, in_channel=3, load=False, checkpoint='checkpoints'):
+def load_model(dataset_name, optimizer, model_name, channel, nclasses, image_size, term, in_channel=3, load=False, checkpoint='checkpoints'):
     dir = dir_check(f'{checkpoint}/{dataset_name}/{optimizer}/{model_name}')
     dir_check(f'{dir}/result')
 
@@ -54,7 +54,7 @@ def load_model(dataset_name, optimizer, model_name, channel, nclasses, image_siz
             
             with open(recall_path, 'r') as f:
                 text = f.readline()
-            recalls = [float(r) for r in text.split(' ')[:-1]]
+            recalls = [float(r) for r in text.split(' ')[:-1]][:result[0]//term-1]
 
             print(f'Success to load model from {model_path}')
             return model, *result, recalls, dir
