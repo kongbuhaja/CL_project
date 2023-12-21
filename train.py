@@ -24,27 +24,7 @@ model.to(Device)
 epochs = args.epochs
 train_iters = len(train_dataloader)
 
-if args.optimizer == 'SGD':
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.init_lr)
-elif args.optimizer == 'Momentum':
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.init_lr, momentum=0.9)
-elif args.optimizer == 'Adam':
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.init_lr)
-elif args.optimizer == 'Adadelta':
-    optimizer = torch.optim.Adadelta(model.parameters(), lr=args.init_lr)
-elif args.optimizer == 'Adagrad':
-    optimizer = torch.optim.Adagrad(model.parameters(), lr=args.init_lr)
-elif args.optimizer == 'AdamW':
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.init_lr)
-
-elif args.optimizer == 'NAdam':
-    optimizer = torch.optim.NAdam(model.parameters(), lr=args.init_lr)
-elif args.optimizer == 'RAdam':
-    optimizer = torch.optim.RAdam(model.parameters(), lr=args.init_lr)
-elif args.optimizer == 'RMSprop':
-    optimizer = torch.optim.RMSprop(model.parameters(), lr=args.init_lr)
-elif args.optimizer == 'Rprop':
-    optimizer = torch.optim.Rprop(model.parameters(), lr=args.init_lr)
+optimizer = get_optimizers(model, args.optimizer, args.init_lr)
 
 scheduler = LR_schedular(optimizer, args.lr_schedular)
 loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
