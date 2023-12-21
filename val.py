@@ -20,7 +20,7 @@ def main():
 
     model, start_epoch, best_recall, recalls, save_path = load_model(args.dataset, args.optimizer, args.model, args.channel, 
                                                                     len(train_dataset.unique_labels), args.image_size, args.eval_term,
-                                                                    load=args.load)
+                                                                    load=args.load)#
     model.to(Device)
 
     loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
