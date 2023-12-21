@@ -115,6 +115,28 @@ def loss_function(method, last_dims):
                     torch.nn.functional.one_hot(y, last_dims).type(torch.float32))
     return loss_fn
 
+def get_optimizers(model, optimizer, init_lr):
+    if optimizer == 'SGD':
+        optimizer = torch.optim.SGD(model.parameters(), lr=init_lr)
+    elif optimizer == 'Momentum':
+        optimizer = torch.optim.SGD(model.parameters(), lr=init_lr, momentum=0.9)
+    elif optimizer == 'Adam':
+        optimizer = torch.optim.Adam(model.parameters(), lr=init_lr)
+    elif optimizer == 'Adadelta':
+        optimizer = torch.optim.Adadelta(model.parameters(), lr=init_lr)
+    elif optimizer == 'Adagrad':
+        optimizer = torch.optim.Adagrad(model.parameters(), lr=init_lr)
+    elif optimizer == 'AdamW':
+        optimizer = torch.optim.AdamW(model.parameters(), lr=init_lr)
+    elif optimizer == 'NAdam':
+        optimizer = torch.optim.NAdam(model.parameters(), lr=init_lr)
+    elif optimizer == 'RAdam':
+        optimizer = torch.optim.RAdam(model.parameters(), lr=init_lr)
+    elif optimizer == 'RMSprop':
+        optimizer = torch.optim.RMSprop(model.parameters(), lr=init_lr)
+    elif optimizer == 'Rprop':
+        optimizer = torch.optim.Rprop(model.parameters(), lr=init_lr)
+
 def dir_check(path):
     if not os.path.exists(path):
         os.makedirs(path)
