@@ -136,6 +136,8 @@ def get_optimizers(model, optimizer, init_lr):
         optimizer = torch.optim.RMSprop(model.parameters(), lr=init_lr)
     elif optimizer == 'Rprop':
         optimizer = torch.optim.Rprop(model.parameters(), lr=init_lr)
+    
+    return optimizer
 
 def dir_check(path):
     if not os.path.exists(path):
