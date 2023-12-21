@@ -54,7 +54,7 @@ def load_model(dataset_name, optimizer, model_name, channel, nclasses, image_siz
             
             with open(recall_path, 'r') as f:
                 text = f.readline()
-            recalls = [float(r) for r in text.split(' ')[:-1]][:result[0]//term-1]
+            recalls = [float(r) for r in text.split(' ')[:result[0]//term]]
 
             print(f'Success to load model from {model_path}')
             return model, *result, recalls, dir
