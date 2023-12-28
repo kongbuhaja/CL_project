@@ -8,7 +8,7 @@ log_directory_check(){
 }
 
 start_background_task() {
-    nohup python3 "$1".py --model "$2" --channel 64 --eval_term 5 --dataset "$3" > "$2.log" 2>&1 &
+    nohup python3 "$1".py --model "$2" --channel 64 --eval_term 5 --dataset "$3" > "$4/$2.log" 2>&1 &
 }
 
 wait_for_completion() {
@@ -18,9 +18,10 @@ wait_for_completion() {
 }
 
 task() {
-    start_background_task "$1" "$2" "$3"
+    start_background_task "$1" "$2" "$3" "$4"
     wait_for_completion "$1" "$2" "$3"
 }
 
-log_directory_check "./log"
-task train ResNet18 imagenet
+log_dir="./log"
+log_directory_check "$log_dir"
+task train ResNet18 imagenet "$log_dir"
