@@ -38,7 +38,7 @@
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/3d2ca8b6-8560-4ea5-ad72-68020d93f9b7)  
 
 ### Adam  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/1d6c3ade-95a1-44de-a7f7-8b4fe71844ee)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/d2c2a949-47b1-4fea-bdb0-2a7038607b1c)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/5c28310f-eb08-4ca2-996f-ab88f6e14a03)  
 
 ### Adadelta  
