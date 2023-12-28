@@ -1,3 +1,12 @@
+log_directory_check(){
+    log_dir=$1
+    if [ -d "$log_dir" ]; then
+        :
+    else
+        mkdir -p "$log_dir"
+    fi
+}
+
 start_background_task() {
     nohup python3 "$1".py --model "$2" --channel 64 --eval_term 5 --dataset "$3" > "$2.log" 2>&1 &
 }
@@ -13,4 +22,5 @@ task() {
     wait_for_completion "$1" "$2" "$3"
 }
 
+log_directory_check "./log"
 task train ResNet18 imagenet
