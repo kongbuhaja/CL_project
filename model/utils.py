@@ -38,7 +38,6 @@ def save_model(model, path, epoch, recall):
 
 def load_model(dataset_name, optimizer, model_name, channel, nclasses, image_size, term, in_channel=3, load=False, checkpoint='checkpoints'):
     dir = dir_check(f'{checkpoint}/{dataset_name}/{optimizer}/{model_name}')
-    dir_check(f'{dir}/result')
 
     model_path = dir + '/model.pt'
     info_path = dir + '/model.info'
@@ -77,6 +76,7 @@ def save_recall(path, recalls, term):
 
 def save_loss(path, losses, term):
     path += '/result'
+    dir_check(path)
 
     dirs = path.split('/')
     save_graph('loss_train', path, losses[0], 1, f'{dirs[-4]} X {dirs[-3]} X {dirs[-2]}', 'bottom')
@@ -115,3 +115,12 @@ def save_graph(task, dir_path, values, term, title, highlight='top'):
         plt.gca().add_patch(circle)
     
     plt.savefig(f'{dir_path}/{task}.jpg')
+
+def save_eval(path, recall, loss):
+    path += '/result'
+    dir_check(path)
+
+    with open(f'{path}/validation.txt', 'w') as f:
+        text = f'Validation recall: {recall}\n' +\
+               f'Validation loss  : {loss}\n'
+        f.write(text)

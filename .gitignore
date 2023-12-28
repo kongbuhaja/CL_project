@@ -10,3 +10,7 @@
 !/data/utils.py
 /**/__pycache__
 /output
+
+#etc
+monitor.py
+monitor.sh
