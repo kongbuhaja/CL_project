@@ -82,7 +82,7 @@ def download_dataset(data_name, path):
     elif data_name=='imagenet':
         if not os.path.exists(f'{path}_RAW'):
             os.makedirs(f'{path}_RAW')
-            print('You need download imagenet dataset directly in {path}_RAW')
+            print(f'You need to download imagenet dataset and rename {path}_RAW')
             sys.exit(0)
         train_dataset = from_datasets(root=f'{path}_RAW',
                                       split='train',
