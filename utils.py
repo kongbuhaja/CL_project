@@ -13,11 +13,11 @@ def args_parse():
     parser.add_argument('--load', dest='load', type=str, default=False, help='whether to load model')
     
     #train
-    parser.add_argument('--epochs', dest='epochs', type=int, default=1000, help='epochs for training')
+    parser.add_argument('--epochs', dest='epochs', type=int, default=5000, help='epochs for training')
     parser.add_argument('--loss' , dest='loss', type=str, default='CE', help='function to train model')
     parser.add_argument('--init_lr', dest='init_lr', type=float, default=1e-2, help='init learning rate for training')
     parser.add_argument('--lr_schedular', dest='lr_schedular', type=str, default='cosine_annealing', help='learning rate scheduler')
-    parser.add_argument('--optimizer', dest='optimizer', type=str, default='Momentum', help='optimizer for training')
+    parser.add_argument('--optimizer', dest='optimizer', type=str, default='Adam', help='optimizer for training')
     
     #eval
     parser.add_argument('--eval_term', dest='eval_term', type=int, default=5, help='term of evaluate model')
