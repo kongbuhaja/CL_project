@@ -67,9 +67,9 @@
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/8c0603db-0eb0-411f-9f00-597333fc3dd2)  
 
 ### RMSprop  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/867df6e3-5129-4fad-9e27-cf2ac7eeedda)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/4dcc14c0-7a65-4441-8944-e0fb470ce320)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/f3563872-a7bf-4fff-9fea-8394095a478b)  
 
 ### Rprop  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/5f2d98e1-0e04-40fd-a56c-eeda1867ea71)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/80e68837-d818-442d-9e4f-f99d38f12af8)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/7cfb2826-2512-47ec-8223-41e2fd19092c)  
