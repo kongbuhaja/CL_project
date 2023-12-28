@@ -47,11 +47,11 @@
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/5c28310f-eb08-4ca2-996f-ab88f6e14a03)  
 
 ### Adadelta  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/562ff5c7-35ce-4bd7-91eb-1f38e1f5180f)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/8ab1352e-12f9-46d3-879e-30bf6f73ab3e)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/a0a0afc9-f01a-43f6-9a9f-679310ef0df0)  
 
 ### Adagrad  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/e4d807bf-b677-4901-bd31-2ca6069be7b5)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/f906ae98-6160-43a3-a91e-625156881b63)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/653bee86-9fa7-4049-96e3-e873cf4506c4)  
 
 ### AdamW  
