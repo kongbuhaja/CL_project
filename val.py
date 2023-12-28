@@ -2,7 +2,7 @@ import torch, cv2, tqdm
 import numpy as np
 from torch.utils.data import DataLoader
 
-from model.utils import load_model
+from model.utils import load_model, save_eval
 from data.utils import *
 from utils import *
 
@@ -19,8 +19,8 @@ def main():
     val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, drop_last=False)
 
     model, start_epoch, best_recall, recalls, save_path = load_model(args.dataset, args.optimizer, args.model, args.channel, 
-                                                                    len(train_dataset.unique_labels), args.image_size, args.eval_term,
-                                                                    load=args.load)
+                                                                     len(train_dataset.unique_labels), args.image_size, args.eval_term,
+                                                                     load=args.load)
     model.to(Device)
 
     loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
@@ -52,6 +52,7 @@ def main():
             
             val_tqdm.set_postfix_str(f'| recall: {recall:.3f}, val_loss: {val_loss/(iter+1):.4f}')
     
+    save_eval(save_path, recall, val_loss/(iter+1))
     row = None
     output = None
 
@@ -73,7 +74,7 @@ def main():
                     output = np.concatenate([output, row], 0)
                 row = None
 
-    output_dir = f'output/{args.dataset}/{args.model}'
+    output_dir = f'output/{args.dataset}/{args.optimizer}/{args.model}'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     cv2.imwrite(f'{output_dir}/output.jpg', output)
