@@ -50,7 +50,7 @@
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/653bee86-9fa7-4049-96e3-e873cf4506c4)  
 
 ### AdamW  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/43df0c70-6beb-4f11-9524-9eaf60d3291a)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/167b0646-dae1-4d55-b0ee-0d6e8bb327ac)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/3048cab1-477d-4e7f-b42a-bd317040c5ab)  
 
 ### NAdam  
@@ -58,13 +58,13 @@
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/6a8c0de4-986a-4c0a-99e3-ca5f5e5b5835) 
 
 ### RAdam  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/a71f2d31-78fe-4ef2-b672-801468564735)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/3e448955-df92-4d58-860c-54f948ff904b)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/8c0603db-0eb0-411f-9f00-597333fc3dd2)  
 
 ### RMSprop  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/9b39a2d1-74c4-45e6-a232-0eb2635747e7)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/867df6e3-5129-4fad-9e27-cf2ac7eeedda)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/f3563872-a7bf-4fff-9fea-8394095a478b)  
 
 ### Rprop  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/e6a7dae8-05b5-483f-93ce-27ae4a7c0e1b)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/5f2d98e1-0e04-40fd-a56c-eeda1867ea71)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/7cfb2826-2512-47ec-8223-41e2fd19092c)  
