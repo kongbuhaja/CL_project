@@ -22,7 +22,12 @@
 - [x] NAdam  
 - [x] RAdam 
 - [x] RMSprop  
-- [x] Rprop  
+- [x] Rprop
+
+### LR_schedular:
+- [x] static
+- [x] linear
+- [x] cosine_annealing
 
 ### Task  
 - [x] Train Based Model  
