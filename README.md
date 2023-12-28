@@ -67,7 +67,7 @@
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/8c0603db-0eb0-411f-9f00-597333fc3dd2)  
 
 ### RMSprop  
-![image](https://github.com/kongbuhaja/CL_project/assets/42567320/4dcc14c0-7a65-4441-8944-e0fb470ce320)  
+![image](https://github.com/kongbuhaja/CL_project/assets/42567320/ba4e9aad-60c9-4a06-ae15-87ed1862e1ef)  
 ![image](https://github.com/kongbuhaja/CL_project/assets/42567320/f3563872-a7bf-4fff-9fea-8394095a478b)  
 
 ### Rprop  
