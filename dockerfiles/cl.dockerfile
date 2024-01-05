@@ -29,7 +29,7 @@ RUN echo "== Install Basic Tools ==" &&\
 
 RUN echo "== Install Dev Tolls ==" &&\
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 &&\
-    pip3 install opencv-python matplotlib pillow torchsummary tqdm
+    pip3 install opencv-python matplotlib pillow torchsummary tqdm scipy
 
 # githup
 RUN cd /home/ &&\
