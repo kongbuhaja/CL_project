@@ -8,7 +8,7 @@ class DarkNetBlock(nn.Module):
 
         layers = []
         for s, k in zip([stride] + [1] * (n_layers-1), [kernel_size, 1] * (n_layers//2) + [kernel_size]):
-            c = channel // 1 if k==3 else 2
+            c = channel // 1 if k==3 else channel // 2
             layers += [Conv_Block(in_channel, c, k, s, bn, activation)]
             in_channel = c
 

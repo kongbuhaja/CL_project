@@ -9,11 +9,11 @@ def args_parse():
 
     #model
     parser.add_argument('--model', dest='model', type=str, default='DarkNet19', help='model to train')
-    parser.add_argument('--channel', dest='channel', type=int, default=16, help='channel of basis layers')
+    parser.add_argument('--channel', dest='channel', type=int, default=64, help='channel of basis layers')
     parser.add_argument('--load', dest='load', type=str, default=False, help='whether to load model')
     
     #train
-    parser.add_argument('--epochs', dest='epochs', type=int, default=5000, help='epochs for training')
+    parser.add_argument('--epochs', dest='epochs', type=int, default=1000, help='epochs for training')
     parser.add_argument('--loss' , dest='loss', type=str, default='CE', help='function to train model')
     parser.add_argument('--init_lr', dest='init_lr', type=float, default=1e-2, help='init learning rate for training')
     parser.add_argument('--lr_schedular', dest='lr_schedular', type=str, default='cosine_annealing', help='learning rate scheduler')
