@@ -51,7 +51,7 @@ class Conv_Block(nn.Module):
         if activation=='relu':
             layers += [nn.ReLU()]
         elif activation=='leaky':
-            layer += [nn.LeakyReLU(0.01)]
+            layers += [nn.LeakyReLU(0.01)]
 
         self.layers = nn.Sequential(*layers)
 
