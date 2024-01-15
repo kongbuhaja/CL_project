@@ -19,9 +19,9 @@ wait_for_completion() {
 
 task() {
     start_background_task "$1" "$2" "$3" "$4"
-    wait_for_completion "$1" "$2" "$3"
+    # wait_for_completion "$1" "$2" "$3"
 }
 
 log_dir="./log"
 log_directory_check "$log_dir"
-task train VGG19 imagenet "$log_dir"
+task train DarkNet19 imagenet "$log_dir"

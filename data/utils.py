@@ -5,7 +5,7 @@ import os, shutil, cv2
 import numpy as np
 from data.augmentation import *
 from torchvision import transforms
-import sys
+import sys, urllib.request, tarfile
 
 
 # need to make transform
@@ -62,6 +62,14 @@ def load_dataset(data_name, image_size, path='data'):
     
     return train_dataset, val_dataset
 
+def download_from_server(file, ip_address='166.104.144.76', port=8000):
+    url = f'http://{ip_address}:{port}/{file}.tar.gz'
+    urllib.request.urlretrieve(url, f'./data/{file}.tar.gz')
+
+def extract(file):
+    with tarfile.open(f'./data/{file}.tar.gz', 'r:gz') as tar:
+        tar.extractall(f'./data/')
+
 def download_dataset(data_name, path):
     if data_name=='mnist':
         from_datasets = datasets.MNIST
@@ -80,10 +88,15 @@ def download_dataset(data_name, path):
                                     transform = transforms.ToTensor())
         save_dataset(data_name, train_dataset, val_dataset, path)
     elif data_name=='imagenet':
-        if not os.path.exists(f'{path}_RAW'):
-            os.makedirs(f'{path}_RAW')
-            print(f'You need to download imagenet dataset and rename {path}_RAW')
-            sys.exit(0)
+        raw_file = f'{data_name}_RAW'
+        if not os.path.exists(raw_file):
+            try:
+                print(raw_file)
+                download_from_server(raw_file)
+                extract(raw_file)
+            except:
+                print(f'You need to download imagenet dataset and rename {path}_RAW')
+                sys.exit(0)
         train_dataset = from_datasets(root=f'{path}_RAW',
                                       split='train',
                                       transform = transforms.ToTensor())
