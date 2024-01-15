@@ -16,10 +16,10 @@ Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
 val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=args.cpus)
 
-model, start_epoch, best_recall, recalls, save_path = load_model(args.dataset, args.optimizer, args.model, args.channel, 
-                                                                 len(train_dataset.unique_labels), args.image_size, args.eval_term,
-                                                                 load=args.load)
+# model, start_epoch, best_recall, recalls, save_path = load_model(args.dataset, args.optimizer, args.model, args.channel, 
+#                                                                  len(train_dataset.unique_labels), args.image_size, args.eval_term,
+#                                                                  load=args.load)
 # model.to(Device)
 
 # torchsummary.summary(model, (*args.image_size, 3))
-print(model.layers)
+# print(model.layers)

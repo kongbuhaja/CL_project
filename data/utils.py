@@ -47,67 +47,68 @@ class Custom_Dataset(Dataset):
         return len(self.images)
     
 def load_dataset(data_name, image_size, path='data'):
-    path = f'{path}/{data_name.upper()}'
-    train_path = f'{path}/train'
-    val_path = f'{path}/val'
+    data_name = data_name.upper()
+    train_path = f'{path}/{data_name}/train'
+    val_path = f'{path}/{data_name}/val'
 
-    if not os.path.exists(path):
-        os.makedirs(path)
-        download_dataset(data_name, path=path)
-    elif not os.path.exists(train_path) and not os.path.exists(val_path):
-        download_dataset(data_name, path=path)
+    if not os.path.exists(train_path) and not os.path.exists(val_path):
+        make_dataset(data_name, path)
     
     train_dataset = Custom_Dataset(train_path, image_size)
     val_dataset = Custom_Dataset(val_path, image_size, transfrom=False)
     
     return train_dataset, val_dataset
 
-def download_from_server(file, ip_address='166.104.144.76', port=8000):
+def download_from_server(file, path, ip_address='166.104.144.76', port=8000):
     url = f'http://{ip_address}:{port}/{file}.tar.gz'
-    urllib.request.urlretrieve(url, f'./data/{file}.tar.gz')
+    urllib.request.urlretrieve(url, f'{path}/{file}.tar.gz')
 
-def extract(file):
-    with tarfile.open(f'./data/{file}.tar.gz', 'r:gz') as tar:
+def extract(file, path):
+    with tarfile.open(f'{path}/{file}.tar.gz', 'r:gz') as tar:
         tar.extractall(f'./data/')
 
-def download_dataset(data_name, path):
-    if data_name=='mnist':
+def make_dataset(data_name, path):
+    data_path = f'{path}/{data_name}'
+
+    if not os.path.exists(data_path):
+        os.makedirs(data_path)
+
+    if data_name=='MNIST':
         from_datasets = datasets.MNIST
-    elif data_name=='imagenet':
+    elif data_name=='IMAGENET':
         from_datasets = datasets.ImageNet
-    elif data_name=='cifar100':
+    elif data_name=='CIFAR100':
         from_datasets = datasets.CIFAR100
 
-    if data_name in ['mnist', 'cifar100']:
-        train_dataset = from_datasets(root=path,
+    if data_name in ['MNIST', 'CIFAR100']:
+        train_dataset = from_datasets(root=data_path,
                                     download=True,
                                     transform = transforms.ToTensor())
-        val_dataset = from_datasets(root=path,
+        val_dataset = from_datasets(root=data_path,
                                     train = False,
                                     download=True,
                                     transform = transforms.ToTensor())
-        save_dataset(data_name, train_dataset, val_dataset, path)
-    elif data_name=='imagenet':
+        save_dataset(data_name, train_dataset, val_dataset, data_path)
+    elif data_name=='IMAGENET':
         raw_file = f'{data_name}_RAW'
         if not os.path.exists(raw_file):
             try:
-                print(raw_file)
-                download_from_server(raw_file)
-                extract(raw_file)
+                download_from_server(raw_file, path)
+                extract(raw_file, path)
             except:
-                print(f'You need to download imagenet dataset and rename {path}_RAW')
+                print(f'You need to download imagenet dataset and rename {data_name}_RAW')
                 sys.exit(0)
-        train_dataset = from_datasets(root=f'{path}_RAW',
+        train_dataset = from_datasets(root=f'{data_path}_RAW',
                                       split='train',
                                       transform = transforms.ToTensor())
-        val_dataset = from_datasets(root=f'{path}_RAW',
+        val_dataset = from_datasets(root=f'{data_path}_RAW',
                                     split='val',
                                     transform = transforms.ToTensor())
-        save_imagenet(train_dataset, val_dataset, path)
+        save_imagenet(train_dataset, val_dataset, data_path)
     
 
 def save_dataset(data_name, train_dataset, val_dataset, path):
-    if data_name in ['mnist', 'cifar100']:
+    if data_name in ['MNIST', 'CIFAR100']:
         for dir in os.listdir(path):
             path_ = f'{path}/{dir}'
             if os.path.isdir(path_):
