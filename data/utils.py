@@ -90,18 +90,22 @@ def make_dataset(data_name, path):
                                     transform = transforms.ToTensor())
         save_dataset(data_name, train_dataset, val_dataset, data_path)
     elif data_name=='IMAGENET':
-        raw_file = f'{data_name}_RAW'
-        if not os.path.exists(raw_file):
+        raw_data_path = f'{data_path}_RAW'
+        if not os.path.exists(raw_data_path):
             try:
+                print(f'{raw_data_path} is not exist')
+                raw_file = f'{data_name}_RAW'
                 download_from_server(raw_file, path)
                 extract(raw_file, path)
             except:
                 print(f'You need to download imagenet dataset and rename {data_name}_RAW')
                 sys.exit(0)
-        train_dataset = from_datasets(root=f'{data_path}_RAW',
+        else:
+            print(f'{raw_data_path} is exist')
+        train_dataset = from_datasets(root=raw_data_path,
                                       split='train',
                                       transform = transforms.ToTensor())
-        val_dataset = from_datasets(root=f'{data_path}_RAW',
+        val_dataset = from_datasets(root=raw_data_path,
                                     split='val',
                                     transform = transforms.ToTensor())
         save_imagenet(train_dataset, val_dataset, data_path)
@@ -149,7 +153,7 @@ def save_imagenet(train_dataset, val_dataset, path):
             indices[label] += 1
         print(f'{task} data| total:{np.sum(indices)}, mean:{np.mean(indices)}, std:{np.std(indices)}')
 
-    for dir in os.listdir(f'{path}_RAW'):
-        if os.path.isdir(f'{path}_RAW/{dir}'):
-            shutil.rmtree(f'{path}_RAW/{dir}')
+    # for dir in os.listdir(f'{path}_RAW'):
+    #     if os.path.isdir(f'{path}_RAW/{dir}'):
+    #         shutil.rmtree(f'{path}_RAW/{dir}')
     
