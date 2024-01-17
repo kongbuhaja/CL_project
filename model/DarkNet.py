@@ -53,7 +53,7 @@ def DarkNet19(channel, n_classes, in_channel):
                        muls=[1, 2, 4, 8, 16, 32], 
                        strides=[1, 1, 1, 1, 1, 1], 
                        in_channel=in_channel, 
-                       activation='relu')
+                       activation='leaky')
 
 
     

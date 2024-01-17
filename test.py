@@ -22,5 +22,5 @@ model, start_epoch, best_recall, recalls, save_path = load_model(args.dataset, a
                                                                  load=args.load)
 # model.to(Device)
 
-# torchsummary.summary(model, (*args.image_size, 3), device=Device)
-print(model.layers)
+torchsummary.summary(model, (*args.image_size, 3), device=Device)
+# print(model.layers)
