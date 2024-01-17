@@ -65,7 +65,7 @@ def download_from_server(file, path, ip_address='166.104.144.76', port=8000):
 
 def extract(file, path):
     with tarfile.open(f'{path}/{file}.tar.gz', 'r:gz') as tar:
-        tar.extractall(f'./data/')
+        tar.extractall(f'data/')
 
 def make_dataset(data_name, path):
     data_path = f'{path}/{data_name}'

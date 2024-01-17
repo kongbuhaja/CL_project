@@ -47,7 +47,7 @@ class DarkNetTiny(nn.Module):
         return out
 
 def DarkNet19(channel, n_classes, in_channel):
-    return DarkNetTiny(channel=channel, 
+    return DarkNetTiny(channel=channel//2, 
                        n_classes=n_classes, 
                        n_blocks=[1, 1, 3, 3, 5, 5], 
                        muls=[1, 2, 4, 8, 16, 32], 
