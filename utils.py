@@ -109,7 +109,7 @@ class LR_schedular:
 
 def loss_function(method, last_dims):
     if method.upper() == 'CE':
-        loss_fn = torch.nn.CrossEntropyLoss()
+        loss_fn = lambda x, y :torch.nn.CrossEntropyLoss()(x.softmax(-1), y)
     elif method.upper() == 'BCE':
         loss_fn = lambda x, y :torch.nn.BCEWithLogitsLoss()(x, 
                     torch.nn.functional.one_hot(y, last_dims).type(torch.float32))
