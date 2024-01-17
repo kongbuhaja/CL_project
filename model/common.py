@@ -38,7 +38,7 @@ def conv3x3(in_planes, out_planes, stride=1):
                 
 def conv1x1(in_planes, out_planes, stride=1):
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,
-                     padding=0, bias=False)
+                     padding=1, bias=False)
 
 class Conv_Block(nn.Module):
     def __init__(self, in_channel, channel, kernel_size=3, stride=1, bn=True, activation='relu'):
