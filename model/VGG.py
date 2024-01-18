@@ -29,11 +29,11 @@ class VGG(nn.Module):
             layers += [VGGBlock(in_channel, channel * mul, n_block, stride=stride, bn=bn, activation=activation)]
             in_channel = layers[-1].channel
             layers += [nn.MaxPool2d((2,2), 2)]
-            flat_channel = flat_channel // 4
 
+        layers += [nn.AdaptiveAvgPool2d((1,1))]
         layers += [nn.Flatten()]
 
-        layers += [FC_Block(layers[-3].channel * flat_channel, channel * 64, activation)]
+        layers += [FC_Block(layers[-4].channel, channel * 64, activation)]
         layers += [nn.Dropout(0.5)]
         layers += [FC_Block(layers[-2].channel, channel * 64, activation)]
         layers += [nn.Dropout(0.5)]

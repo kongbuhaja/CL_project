@@ -35,18 +35,16 @@ class ResNet(nn.Module):
     def __init__(self, channel, n_classes, n_blocks, muls, strides, in_channel, activation):
         super().__init__()
 
-        layers = [Conv_Block(in_channel, channel, kernel_size=7, stride=2, activation=activation)]
-        in_channel = channel * muls[0]
+        layers = [Conv_Block(in_channel, channel * muls[0], kernel_size=7, stride=2, activation=activation)]
 
         layers += [nn.MaxPool2d((3,3), 2)]
         for n_block, mul, stride in zip(n_blocks, muls, strides):
             for s in [stride] + [1] * (n_block-1):
-                layers += [ResBlock(in_channel, channel * mul, stride=s, activation=activation)]
-                in_channel = layers[-1].channel
+                layers += [ResBlock(layers[-1].channel, channel * mul, stride=s, activation=activation)]
 
         layers += [nn.AdaptiveAvgPool2d((1,1))]
         layers += [nn.Flatten()]
-        layers += [FC_Block(in_channel, n_classes)]
+        layers += [FC_Block(layers[-3].channel, n_classes)]
 
         self.layers = nn.Sequential(*layers)
 
