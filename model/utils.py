@@ -10,17 +10,17 @@ from model.GoogleNet import GoogleNet22
 from model.MLP import MLP
 from utils import dir_check
 
-def Model(model_name, channel, n_classes, image_size, in_channel):
+def Model(model_name, channel, n_classes, in_channel):
     if model_name == 'DarkNet19':
         model = DarkNet19(channel, n_classes, in_channel)
     elif model_name == 'ResNet18':
         model = ResNet18(channel, n_classes, in_channel)
     elif model_name == 'VGG16':
-        model = VGG16(channel, n_classes, image_size, in_channel)
+        model = VGG16(channel, n_classes, in_channel)
     elif model_name == 'VGG19':
-        model = VGG19(channel, n_classes, image_size, in_channel)
+        model = VGG19(channel, n_classes, in_channel)
     elif model_name == 'GoogleNet22':
-        model = GoogleNet22(channel, n_classes, image_size, in_channel)
+        model = GoogleNet22(channel, n_classes, in_channel)
     elif model_name == 'MLP':
         model = MLP(channel, n_classes, in_channel)
 
@@ -36,7 +36,7 @@ def save_model(model, path, epoch, recall):
         f.write(text)
     print(f'Success to save model in {model_path}')
 
-def load_model(dataset_name, optimizer, model_name, channel, nclasses, image_size, term, in_channel=3, load=False, checkpoint='checkpoints'):
+def load_model(dataset_name, optimizer, model_name, channel, nclasses, term, in_channel=3, load=False, checkpoint='checkpoints'):
     dir = dir_check(f'{checkpoint}/{dataset_name}/{optimizer}/{model_name}')
 
     model_path = dir + '/model.pt'
@@ -61,7 +61,7 @@ def load_model(dataset_name, optimizer, model_name, channel, nclasses, image_siz
             print(f'Fail to load model from {model_path}, So ', end='')
 
     print(f'Create {model_name} model')
-    model = Model(model_name, channel, nclasses, image_size, in_channel)
+    model = Model(model_name, channel, nclasses, in_channel)
     return model, *[0, 0.], [], dir
 
 def save_recall(path, recalls, term):

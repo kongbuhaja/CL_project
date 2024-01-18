@@ -20,9 +20,8 @@ class VGGBlock(nn.Module):
         return out
 
 class VGG(nn.Module):
-    def __init__(self, channel, n_classes, n_blocks, muls, strides, image_size, in_channel, bn=True, activation='relu'):
+    def __init__(self, channel, n_classes, n_blocks, muls, strides, in_channel, bn=True, activation='relu'):
         super().__init__()
-        flat_channel = np.prod(image_size) 
         
         layers = []
         for n_block, mul, stride in zip(n_blocks, muls, strides):
@@ -30,10 +29,10 @@ class VGG(nn.Module):
             in_channel = layers[-1].channel
             layers += [nn.MaxPool2d((2,2), 2)]
 
-        layers += [nn.AdaptiveAvgPool2d((1,1))]
+        layers += [nn.AdaptiveAvgPool2d((7,7))]
         layers += [nn.Flatten()]
 
-        layers += [FC_Block(layers[-4].channel, channel * 64, activation)]
+        layers += [FC_Block(layers[-4].channel*49, channel * 64, activation)]
         layers += [nn.Dropout(0.5)]
         layers += [FC_Block(layers[-2].channel, channel * 64, activation)]
         layers += [nn.Dropout(0.5)]
@@ -46,23 +45,21 @@ class VGG(nn.Module):
         out = self.layers(out)
         return out
 
-def VGG19(channel, n_classes, image_size, in_channel):
+def VGG19(channel, n_classes, in_channel):
     return VGG(channel=channel,
                n_classes=n_classes,
                n_blocks=[2, 2, 4, 4, 4], 
                muls=[1, 2, 4, 8, 8],
-               strides=[1, 1, 1, 1, 1], 
-               image_size=image_size, 
+               strides=[1, 1, 1, 1, 1],  
                in_channel=in_channel,
                activation='relu')
 
-def VGG16(channel, n_classes, image_size, in_channel):
+def VGG16(channel, n_classes, in_channel):
     return VGG(channel=channel,
                n_classes=n_classes,
                n_blocks=[2, 2, 3, 3, 3], 
                muls=[1, 2, 4, 8, 8],
                strides=[1, 1, 1, 1, 1], 
-               image_size=image_size, 
                in_channel=in_channel,
                activation='relu')
 

@@ -30,31 +30,30 @@ class Inception(nn.Module):
         return torch.concat([out1x1, out3x3, out5x5, outmax], dim=1)
     
 class GoogleNet(nn.Module):
-    def __init__(self, channel, n_classes, image_size, in_channel):
+    def __init__(self, channel, n_classes, in_channel):
         super().__init__()
-        h, w = image_size[0]//32, image_size[1]//32
 
         layers = [Conv_Block(in_channel, channel, kernel_size=7, stride=2)]
-        layers += [nn.MaxPool2d((3,3), 2, padding=1)]
+        layers += [nn.MaxPool2d((3,3), 2, 1)]
 
         layers += [Conv_Block(layers[-2].channel, channel, kernel_size=1)]
         layers += [Conv_Block(layers[-1].channel, channel*3)]
-        layers += [nn.MaxPool2d((3,3), 2, padding=1)]
+        layers += [nn.MaxPool2d((3,3), 2, 1)]
 
         layers += [Inception(layers[-2].channel, [channel, [int(channel*1.5), channel*2], [channel//4, channel//2], channel//2])]
         layers += [Inception(layers[-1].channel, [channel*2, [channel*2, channel*3], [channel//2, int(channel*1.5)], channel])]
-        layers += [nn.MaxPool2d((3,3), 2, padding=1)]
+        layers += [nn.MaxPool2d((3,3), 2, 1)]
 
         layers += [Inception(layers[-2].channel, [channel*3, [int(channel*1.5), int(channel*3.25)], [channel//4, int(channel*0.75)], channel])]
         layers += [Inception(layers[-1].channel, [int(channel*2.5), [int(channel*1.75), int(channel*3.5)], [int(channel*0.375), channel], channel])]
         layers += [Inception(layers[-1].channel, [channel*2, [channel*2, channel*4], [int(channel*0.375), channel], channel])]
         layers += [Inception(layers[-1].channel, [int(channel*1.75), [int(channel*2.25), int(channel*4.5)], [channel//2, channel], channel])]
-        layers += [Inception(layers[-1].channel, [channel*3, [int(channel*2.5), channel*5], [channel//2, channel*2], channel*2])]
-        layers += [nn.MaxPool2d((3,3), 2, padding=1)]
+        layers += [Inception(layers[-1].channel, [channel*4, [int(channel*2.5), channel*5], [channel//2, channel*2], channel*2])]
+        layers += [nn.MaxPool2d((3,3), 2, 1)]
 
         layers += [Inception(layers[-2].channel, [channel*4, [int(channel*2.5), channel*5], [channel//2, channel*2], channel*2])]
         layers += [Inception(layers[-1].channel, [channel*6, [channel*3, channel*6], [int(channel*0.75), channel*2], channel*2])]
-        # layers += [nn.AvgPool2d((h, w), 1)]
+    
         layers += [nn.AdaptiveAvgPool2d((1,1))]
 
         layers += [nn.Flatten()]
@@ -68,7 +67,7 @@ class GoogleNet(nn.Module):
         out = self.layers(out)
         return out
 
-def GoogleNet22(channel, n_classes, image_size, in_channel):
-    return GoogleNet(channel, n_classes, image_size, in_channel)
+def GoogleNet22(channel, n_classes, in_channel):
+    return GoogleNet(channel, n_classes, in_channel)
 
         

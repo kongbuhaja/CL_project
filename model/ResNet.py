@@ -38,7 +38,7 @@ class ResNet(nn.Module):
         layers = [Conv_Block(in_channel, channel * muls[0], kernel_size=7, stride=2, activation=activation)]
         in_channel = channel * muls[0]
 
-        layers += [nn.MaxPool2d((3,3), 2)]
+        layers += [nn.MaxPool2d((3,3), 2, 1)]
         for n_block, mul, stride in zip(n_blocks, muls, strides):
             for s in [stride] + [1] * (n_block-1):
                 layers += [ResBlock(in_channel, channel * mul, stride=s, activation=activation)]

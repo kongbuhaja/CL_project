@@ -8,7 +8,7 @@ log_directory_check(){
 }
 
 start_background_task() {
-    nohup python3 "$1".py --model "$2" --channel 64 --eval_term 5 --dataset "$3" > "$4/$2.log" 2>&1 &
+    nohup python3 "$1".py --model "$2" --channel 64 --batch_size 100 --eval_term 5 --dataset "$3" > "$4/$2.log" 2>&1 &
 }
 
 wait_for_completion() {
@@ -24,4 +24,4 @@ task() {
 
 log_dir="./log"
 log_directory_check "$log_dir"
-task train VGG16 imagenet "$log_dir"
+task train VGG19 cifar100 "$log_dir"

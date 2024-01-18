@@ -31,7 +31,7 @@ class DarkNetTiny(nn.Module):
         layers += [DarkNetBlock(in_channel, channel * muls[-1], n_blocks[-1], stride=strides[-1], activation=activation)]
         in_channel = layers[-1].channel
 
-        layers += [Conv_Block(in_channel, n_classes, 1, 1, False, activation)]
+        layers += [Conv_Block(in_channel, n_classes, 1, 1, False)]
         layers += [nn.AdaptiveAvgPool2d((1,1))]
         layers += [nn.Flatten()]
 
