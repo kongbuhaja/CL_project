@@ -45,7 +45,7 @@ class Conv_Block(nn.Module):
         super().__init__()
         self.channel = channel
 
-        layers = [conv(in_channel, channel, kernel_size, stride, not bn)]
+        layers = [conv(in_channel, channel, kernel_size, stride, bn)]
         layers += [nn.BatchNorm2d(channel)] if bn else []
 
         if activation=='relu':
@@ -85,6 +85,6 @@ class Reshape(nn.Module):
         self.shape = shape
 
     def forward(self, x):
-        return x.view(self.shape)
+        return x.view(x.shape[0], *self.shape)
 
 

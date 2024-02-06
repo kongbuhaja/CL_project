@@ -43,7 +43,7 @@ def args_show(args, length=121, train=True):
     print(f'‖ {"gpus: "+str(len(args.gpus.split(","))):<{l}} | {"cpus: "+str(args.cpus):<{l}} | {" ":<{l}} ‖')
 
     print(f'‖{"Train" if train else "Val":-^{length-2}}‖')
-    print(f'‖ {"epochs: "+str(args.epochs):<{l}} | {"lr_schedular: "+args.lr_schedular:<{l}} | {"optimizer: "+args.optimizer+f"({str(args.init_lr)})":<{l}} ‖') if train else print('',end='')
+    print(f'‖ {"epochs: "+str(args.epochs):<{l}} | {"lr_schedular: "+args.lr_schedular+str(args.init_lr):<{l}} | {"optimizer: "+args.optimizer:<{l}} ‖') if train else print('',end='')
     print(f'‖ {"loss: "+args.loss:<{l}} | {" ":<{l}} | {" ":<{l}} ‖')
 
     print(f'‖{"Model":-^{length-2}}‖')
@@ -83,12 +83,13 @@ class LR_schedular:
 
         self.optimizer.zero_grad()
 
-    def step(self, *params):
+    def step(self, loss, *params):
         self.lr = self.schedule(*params)
         for i in range(len(self.optimizer.param_groups)):
             self.optimizer.param_groups[i]['lr'] = self.lr
-        self.optimizer.step()
         self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
         return self.lr
 
     def static(self, *params):

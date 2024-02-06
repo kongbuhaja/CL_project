@@ -1,5 +1,5 @@
  
-switch = 0
+switch = 1
 import torchsummary
 Device = "cpu"
 
@@ -28,15 +28,15 @@ if switch == 0:
                                                                     load=args.load)
     model.to(Device)
     torchsummary.summary(model, (256,256,3), device=Device)
-    # print(model.layers)
+    print(model.layers)
 
 
 elif switch == 1:
     import torchvision
 
-    # model = torchvision.models.vgg16_bn()
+    model = torchvision.models.vgg16_bn()
     # model = torchvision.models.resnet18()
-    model = torchvision.models.googlenet()
+    # model = torchvision.models.googlenet()
     model.to(Device)
     torchsummary.summary(model, (3,256,256), device=Device)
-    # print(model)
+    print(model)

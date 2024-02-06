@@ -59,12 +59,12 @@ def load_dataset(data_name, image_size, path='data'):
     
     return train_dataset, val_dataset
 
-def download_from_server(file, path, ip_address='166.104.144.76', port=8000):
-    url = f'http://{ip_address}:{port}/{file}.tar.gz'
-    urllib.request.urlretrieve(url, f'{path}/{file}.tar.gz')
+def download_from_server(data_name, path, ip_address='166.104.144.76', port=8000):
+    url = f'http://{ip_address}:{port}/Classification/{data_name}_RAW.tar.gz'
+    urllib.request.urlretrieve(url, f'{path}/{data_name}_RAW.tar.gz')
 
-def extract(file, path):
-    with tarfile.open(f'{path}/{file}.tar.gz', 'r:gz') as tar:
+def extract(data_name, path):
+    with tarfile.open(f'{path}/{data_name}_RAW.tar.gz', 'r:gz') as tar:
         tar.extractall(f'data/')
 
 def make_dataset(data_name, path):
@@ -94,9 +94,8 @@ def make_dataset(data_name, path):
         if not os.path.exists(raw_data_path):
             try:
                 print(f'{raw_data_path} is not exist')
-                raw_file = f'{data_name}_RAW'
-                download_from_server(raw_file, path)
-                extract(raw_file, path)
+                download_from_server(data_name, path)
+                extract(data_name, path)
             except:
                 print(f'You need to download imagenet dataset and rename {data_name}_RAW')
                 sys.exit(0)

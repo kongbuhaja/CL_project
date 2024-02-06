@@ -1,4 +1,4 @@
-import torch, tqdm
+import torch, tqdm, torchvision
 from torch.utils.data import DataLoader
 
 from model.utils import *
@@ -17,8 +17,19 @@ train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle
 val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=args.cpus)
 
 model, start_epoch, best_recall, recalls, save_path = load_model(args.dataset, args.optimizer, args.model, args.channel, 
-                                                                 len(train_dataset.unique_labels), args.eval_term, 
-                                                                 image_size=args.image_size, load=args.load)
+                                                                 len(train_dataset.unique_labels), args.eval_term, load=args.load)
+import torchvision
+model = torchvision.models.vgg16_bn()
+for l in model.features:
+    if isinstance(l, torch.nn.ReLU):
+        l.inplace=False
+for l in model.classifier:
+    if isinstance(l, torch.nn.ReLU):
+        l.inplace=False
+print(model)
+start_epoch=0
+best_recall=0.
+recalls=[]
 model.to(Device)
 
 epochs = args.epochs
@@ -36,7 +47,7 @@ for epoch in range(start_epoch, epochs):
     model.train()
     train_tqdm = tqdm.tqdm(train_dataloader, total=train_iters, ncols=121, desc=f'Train epoch {epoch+1}/{epochs}', ascii=' =', colour='red')
     for iter, (x_data, y_data) in enumerate(train_tqdm):
-        pred = model(x_data.to(Device))
+        pred = model(x_data.to(Device).permute(0,3,1,2).contiguous())
         loss = loss_fn(pred, y_data[..., 0].to(Device))
         scheduler.step(loss, epoch*train_iters+iter, epochs*train_iters)
 

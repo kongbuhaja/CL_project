@@ -24,4 +24,4 @@ task() {
 
 log_dir="./log"
 log_directory_check "$log_dir"
-task train VGG19 cifar100 "$log_dir"
+task train2 VGG16 imagenet "$log_dir"
