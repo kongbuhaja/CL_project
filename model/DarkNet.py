@@ -35,18 +35,16 @@ class DarkNetTiny(nn.Module):
         layers += [nn.AdaptiveAvgPool2d((1,1))]
         layers += [nn.Flatten()]
 
-        # layers += [nn.AdaptiveAvgPool2d((1,1))]
-        # layers += [nn.Flatten()]
-        # layers += [FC_Block(in_channel, n_classes)]
-
         self.layers = nn.Sequential(*layers)
 
     def forward(self, x):
-        out = x.permute(0,3,1,2).contiguous()
-        out = self.layers(out)
+        out = self.layers(x)
         return out
 
-def DarkNet19(channel, n_classes, in_channel):
+def DarkNet19(channel, n_classes, in_channel, official):
+    if official:
+        print("torch vision don't support DarkNet19")
+        
     return DarkNetTiny(channel=channel//2, 
                        n_classes=n_classes, 
                        n_blocks=[1, 1, 3, 3, 5, 5], 

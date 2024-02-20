@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from model.common import *
+from torchvision.models import resnet18
 
 class ResBlock(nn.Module):
     def __init__(self, in_channel, channel, kernel_size=3, stride=1, bn=True, activation='relu'):
@@ -51,15 +52,20 @@ class ResNet(nn.Module):
         self.layers = nn.Sequential(*layers)
 
     def forward(self, x):
-        out = x.permute(0,3,1,2).contiguous()
-        out = self.layers(out)
+        out = self.layers(x)
         return out
 
-def ResNet18(channel, n_classes, in_channel):
-    return ResNet(channel=channel, 
-                  n_classes=n_classes, 
-                  n_blocks=[2, 2, 2, 2], 
-                  muls=[1, 2, 4, 8], 
-                  strides=[1, 2, 2, 2], 
-                  in_channel=in_channel,
-                  activation='relu')
+def ResNet18(channel, n_classes, in_channel, official=False):
+    if not official:
+        model = ResNet(channel=channel, 
+                       n_classes=n_classes, 
+                       n_blocks=[2, 2, 2, 2], 
+                       muls=[1, 2, 4, 8], 
+                       strides=[1, 2, 2, 2], 
+                       in_channel=in_channel,
+                       activation='relu')
+    else:
+        model = resnet18()
+        model.fc = nn.Linear(512, n_classes)
+
+    return model

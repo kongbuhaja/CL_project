@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from model.common import *
+from torchvision.models import googlenet
 
 class Inception(nn.Module):
     def __init__(self, in_channel, channels, bn=True, activation='relu'):
@@ -63,11 +64,16 @@ class GoogleNet(nn.Module):
         self.layers = nn.Sequential(*layers)
 
     def forward(self, x):
-        out = x.permute(0,3,1,2).contiguous()
-        out = self.layers(out)
+        out = self.layers(x)
         return out
 
-def GoogleNet22(channel, n_classes, in_channel):
-    return GoogleNet(channel, n_classes, in_channel)
+def GoogleNet22(channel, n_classes, in_channel, official):
+    if not official:
+        model = GoogleNet(channel, n_classes, in_channel)
+    else:
+        model = googlenet(aux_logits=False)
+        model.fc = nn.Linear(1024, n_classes)
+        
+    return model
 
         

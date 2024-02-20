@@ -11,7 +11,9 @@ def args_parse():
     parser.add_argument('--model', dest='model', type=str, default='DarkNet19', help='model to train')
     parser.add_argument('--channel', dest='channel', type=int, default=64, help='channel of basis layers')
     parser.add_argument('--load', dest='load', type=str, default=False, help='whether to load model')
-    
+    parser.add_argument('--official', dest='official', type=str, default=False, help='model from torch vision')
+    parser.add_argument('--checkpoint', dest='checkpoint', type=str, default='checkpoints', help='directory to save model')
+
     #train
     parser.add_argument('--epochs', dest='epochs', type=int, default=1000, help='epochs for training')
     parser.add_argument('--loss' , dest='loss', type=str, default='CE', help='function to train model')
@@ -20,10 +22,10 @@ def args_parse():
     parser.add_argument('--optimizer', dest='optimizer', type=str, default='Adam', help='optimizer for training')
     
     #eval
-    parser.add_argument('--eval_term', dest='eval_term', type=int, default=5, help='term of evaluate model')
+    parser.add_argument('--eval_term', dest='eval_term', type=int, default=1, help='term of evaluate model')
 
     #dataset
-    parser.add_argument('--dataset', dest='dataset', type=str, default='cifar100', help='dataset for training')
+    parser.add_argument('--dataset', dest='dataset', type=str, default='mnist', help='dataset for training')
     parser.add_argument('--image_size', dest='image_size', type=str, default='256x256', help='dataset for training')
     parser.add_argument('--batch_size', dest='batch_size', type=int, default=100, help='batch_size for training or inference')
 
@@ -31,6 +33,7 @@ def args_parse():
     
     args.image_size = [int(l) for l in args.image_size.split('x')]
     args.load = args.load in ['True', 'true', 'T', 't']
+    args.official = args.official in ['True', 'true', 'T', 't']
     
     return args
 

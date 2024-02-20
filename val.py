@@ -35,7 +35,7 @@ def main():
         val_loss = 0.
         val_tqdm = tqdm.tqdm(val_dataloader, total=len(val_dataloader), ncols=121, desc=f'Validation', ascii=' =', colour='blue')
         for iter, (x_data, y_data) in enumerate(val_tqdm):
-            pred = model(x_data.to(Device))
+            pred = model(x_data.to(Device).permute(0,3,1,2))
             loss = loss_fn(pred, y_data[..., 0].to(Device))
 
             val_loss += loss.item()

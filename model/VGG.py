@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from model.common import *
+from torchvision.models import vgg16_bn, vgg11_bn, vgg19_bn
 
 class VGGBlock(nn.Module):
     def __init__(self, in_channel, channel, n_layers, kernel_size=3, stride=1, bn=False, activation='relu'):
@@ -43,38 +44,53 @@ class VGG(nn.Module):
         self.layers = nn.Sequential(*layers)
 
     def forward(self, x):
-        out = x.permute(0,3,1,2).contiguous()
-        out = self.layers(out)
+        out = self.layers(x)
         return out
 
-def VGG19(channel, n_classes, in_channel, image_size):
-    return VGG(channel=channel,
-               n_classes=n_classes,
-               n_blocks=[2, 2, 4, 4, 4], 
-               muls=[1, 2, 4, 8, 8],
-               strides=[1, 1, 1, 1, 1],  
-               in_channel=in_channel,
-               image_size=image_size,
-               activation='relu')
+def VGG19(channel, n_classes, in_channel, image_size, official):
+    if not official:
+        model = VGG(channel=channel,
+                    n_classes=n_classes,
+                    n_blocks=[2, 2, 4, 4, 4], 
+                    muls=[1, 2, 4, 8, 8],
+                    strides=[1, 1, 1, 1, 1],  
+                    in_channel=in_channel,
+                    image_size=image_size,
+                    activation='relu')
+    else:
+        model = vgg19_bn()
+        model.classifier[-1] = torch.nn.Linear(4096, n_classes)
+    return model
 
-def VGG16(channel, n_classes, in_channel, image_size):
-    return VGG(channel=channel,
-               n_classes=n_classes,
-               n_blocks=[2, 2, 3, 3, 3], 
-               muls=[1, 2, 4, 8, 8],
-               strides=[1, 1, 1, 1, 1], 
-               in_channel=in_channel,
-               image_size=image_size,
-               activation='relu')
+def VGG16(channel, n_classes, in_channel, image_size, official):
+    if not official:
+        model = VGG(channel=channel,
+                    n_classes=n_classes,
+                    n_blocks=[2, 2, 3, 3, 3], 
+                    muls=[1, 2, 4, 8, 8],
+                    strides=[1, 1, 1, 1, 1], 
+                    in_channel=in_channel,
+                    image_size=image_size,
+                    activation='relu')
+    else:
+        model = vgg16_bn()
+        model.classifier[-1] = torch.nn.Linear(4096, n_classes)
+    return model
 
-def VGG11(channel, n_classes, in_channel, image_size):
-    return VGG(channel=channel,
-               n_classes=n_classes,
-               n_blocks=[1, 1, 2, 2, 2], 
-               muls=[1, 2, 4, 8, 8],
-               strides=[1, 1, 1, 1, 1], 
-               in_channel=in_channel,
-               image_size=image_size,
-               activation='relu')
+def VGG11(channel, n_classes, in_channel, image_size, official):
+    if not official:
+        model = VGG(channel=channel,
+                    n_classes=n_classes,
+                    n_blocks=[1, 1, 2, 2, 2], 
+                    muls=[1, 2, 4, 8, 8],
+                    strides=[1, 1, 1, 1, 1], 
+                    in_channel=in_channel,
+                    image_size=image_size,
+                    activation='relu')
+    else:
+        print("off")
+        model = vgg11_bn()
+        model.classifier[-1] = torch.nn.Linear(4096, n_classes)
+    return model
 
     

@@ -16,9 +16,7 @@ train_dataset, val_dataset = load_dataset(args.dataset, args.image_size)
 train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=args.cpus)
 val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=args.cpus)
 
-model, start_epoch, best_recall, recalls, save_path = load_model(args.dataset, args.optimizer, args.model, args.channel, 
-                                                                 len(train_dataset.unique_labels), args.eval_term, 
-                                                                 image_size=args.image_size, load=args.load)
+model, start_epoch, best_recall, recalls, save_path = load_model(args, len(train_dataset.unique_labels))
 model.to(Device)
 
 epochs = args.epochs
@@ -36,7 +34,7 @@ for epoch in range(start_epoch, epochs):
     model.train()
     train_tqdm = tqdm.tqdm(train_dataloader, total=train_iters, ncols=121, desc=f'Train epoch {epoch+1}/{epochs}', ascii=' =', colour='red')
     for iter, (x_data, y_data) in enumerate(train_tqdm):
-        pred = model(x_data.to(Device))
+        pred = model(x_data.to(Device).permute(0,3,1,2))
         loss = loss_fn(pred, y_data[..., 0].to(Device))
         scheduler.step(loss, epoch*train_iters+iter, epochs*train_iters)
 
