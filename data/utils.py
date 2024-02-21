@@ -10,7 +10,7 @@ import sys, urllib.request, tarfile
 
 # need to make transform
 class Custom_Dataset(Dataset):
-    def __init__(self, path, image_size, transfrom=True):
+    def __init__(self, path, image_size, transform=True):
         self.image_size = image_size
         self.images = []
         self.labels = []
@@ -24,7 +24,7 @@ class Custom_Dataset(Dataset):
 
         self.length = len(self.images)
 
-        if transfrom:
+        if transform:
             self.transforms = transforms.Compose([Random_resize(self.image_size),
                                                   Padding(),
                                                   Rotate90(),
@@ -55,7 +55,7 @@ def load_dataset(data_name, image_size, path='data'):
         make_dataset(data_name, path)
     
     train_dataset = Custom_Dataset(train_path, image_size)
-    val_dataset = Custom_Dataset(val_path, image_size, transfrom=False)
+    val_dataset = Custom_Dataset(val_path, image_size, transform=False)
     
     return train_dataset, val_dataset
 
