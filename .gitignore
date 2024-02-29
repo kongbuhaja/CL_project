@@ -8,6 +8,7 @@
 /data/*
 !/data/augmentation.py
 !/data/utils.py
+!/data/dataset.py
 /**/__pycache__
 /output
 /log
