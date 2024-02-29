@@ -1,5 +1,5 @@
 #files
-*.ipynb
+# *.ipynb
 *.log
 # test.py
 

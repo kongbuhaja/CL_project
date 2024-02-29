@@ -94,7 +94,7 @@ def store_grad(params, grads, grad_dims, tid):
         if param.grad is not None:
             beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
             en = sum(grad_dims[:cnt + 1])
-            grads[beg: en, tid].copy_(param.grad.data.view(-1))
+            grads[beg:en, tid].copy_(param.grad.data.view(-1))
 
 def overwrite_grad(params, new_grad, grad_dims):
     for cnt, param in enumerate(params()):
