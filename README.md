@@ -24,7 +24,7 @@
 - [x] RMSprop  
 - [x] Rprop
 
-### LR_schedular:
+### LR_scheduler:
 - [x] static
 - [x] linear
 - [x] cosine_annealing

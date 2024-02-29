@@ -25,7 +25,7 @@ def args_parse():
     parser.add_argument('--epochs', dest='epochs', type=int, default=5, help='epochs for training')
     parser.add_argument('--loss' , dest='loss', type=str, default='CE', help='function to train model')
     parser.add_argument('--init_lr', dest='init_lr', type=float, default=1e-2, help='init learning rate for training')
-    parser.add_argument('--lr_schedular', dest='lr_schedular', type=str, default='cosine_annealing', help='learning rate scheduler')
+    parser.add_argument('--lr_scheduler', dest='lr_scheduler', type=str, default='cosine_annealing', help='learning rate scheduler')
     parser.add_argument('--optimizer', dest='optimizer', type=str, default='Adam', help='optimizer for training')
     
     #eval
@@ -56,7 +56,7 @@ def args_show(args, length=121, train=True):
     print(f'‖ {"gpus: "+str(len(args.gpus.split(","))):<{l}} | {"cpus: "+str(args.cpus):<{l}} | {" ":<{l}} ‖')
 
     print(f'‖{"Train" if train else "Val":-^{length-2}}‖')
-    print(f'‖ {"epochs: "+str(args.epochs):<{l}} | {"lr_schedular: "+args.lr_schedular+f"({args.init_lr})":<{l}} | {"optimizer: "+args.optimizer:<{l}} ‖') if train else print('',end='')
+    print(f'‖ {"epochs: "+str(args.epochs):<{l}} | {"lr_scheduler: "+args.lr_scheduler+f"({args.init_lr})":<{l}} | {"optimizer: "+args.optimizer:<{l}} ‖') if train else print('',end='')
     print(f'‖ {"loss: "+args.loss:<{l}} | {" ":<{l}} | {" ":<{l}} ‖')
 
     print(f'‖{"Model":-^{length-2}}‖')
@@ -77,7 +77,7 @@ def env_set(args):
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
 
-class LR_schedular:
+class LR_scheduler:
     def __init__(self, optimizer, scheduler):
         self.optimizer = optimizer
         self.init_lr = self.optimizer.param_groups[0]['lr']

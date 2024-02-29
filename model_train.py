@@ -22,7 +22,7 @@ train_iters = len(train_dataloader)
 
 optimizer = get_optimizers(model, args.optimizer, args.init_lr)
 
-scheduler = LR_schedular(optimizer, args.lr_schedular)
+scheduler = LR_scheduler(optimizer, args.lr_scheduler)
 loss_fn = loss_function(args.loss, len(train_dataset.unique_labels))
 
 losses = [[], []]
