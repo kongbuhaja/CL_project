@@ -36,7 +36,8 @@ def save_model(model, path, epoch, recall):
     print(f'Success to save model in {model_path}')
 
 def load_model(args, n_classes, device='cpu'):
-    dir = dir_check(f'{args.checkpoint}/{args.dataset}/{args.optimizer}/{args.model}')
+    dir = dir_check(f'{args.checkpoint}/{args.dataset.upper()}/{args.optimizer}/{args.model}') if not args.official else \
+          dir_check(f'{args.checkpoint}/{args.dataset.upper()}/{args.optimizer}/official_{args.model}')
 
     model_path = dir + '/model.pt'
     info_path = dir + '/model.info'
