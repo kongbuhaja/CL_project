@@ -30,7 +30,7 @@ class Resize():
         l = max(h, w)
         ratio = np.array([h/l, w/l])
         out_size = (ratio * self.new_size).astype(np.int32)
-        return cv2.resize(image, out_size)
+        return cv2.resize(image, out_size).reshape(*out_size[::-1], c)
 
 class Random_resize():
     def __init__(self, new_size, minimum=0.7, maximum=1.3):
@@ -44,7 +44,7 @@ class Random_resize():
         ratio = np.array([h/l, w/l])
         out_size = (ratio * self.new_size).astype(np.int32)
         down_size = (ratio * self.new_size * np.tile(np.random.uniform(self.min, self.max , 1), [2,])).astype(np.int32)
-        return cv2.resize(cv2.resize(image, down_size), out_size)
+        return cv2.resize(cv2.resize(image, down_size), out_size).reshape(*out_size[::-1], c)
 
 class Rotate90():
     def __init__(self):
@@ -65,10 +65,8 @@ class Random_Vflip():
     def __call__(self, image):
         if np.random.uniform(0,1) < 0.5:
             return image
-        
         else:
             return image[:,::-1]
-
 
 class Normalization():
     def __init__(self):
@@ -76,3 +74,10 @@ class Normalization():
 
     def __call__(self, image):
         return image/255.
+    
+class BGR2RGB():
+    def __init__(self):
+        pass
+
+    def __call__(self, image):
+        return image[..., [2, 1, 0]]

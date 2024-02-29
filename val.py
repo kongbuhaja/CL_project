@@ -11,7 +11,7 @@ def main():
     args = args_parse()
     args.batch_size = 1
     args_show(args, train=False)
-    env_set(args.gpus)
+    env_set(args)
 
     Device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -35,7 +35,7 @@ def main():
         val_loss = 0.
         val_tqdm = tqdm.tqdm(val_dataloader, total=len(val_dataloader), ncols=121, desc=f'Validation', ascii=' =', colour='blue')
         for iter, (x_data, y_data) in enumerate(val_tqdm):
-            pred = model(x_data.to(Device))
+            pred = model(x_data.to(Device).permute(0,3,1,2))
             loss = loss_fn(pred, y_data[..., 0].to(Device))
 
             val_loss += loss.item()
@@ -78,24 +78,6 @@ def main():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     cv2.imwrite(f'{output_dir}/output.jpg', output)
-
-def eval(model, val_dataloader, loss_fn, Device):
-    model.eval()
-    with torch.no_grad():
-        positive = 0
-        val_loss = 0.
-        val_tqdm = tqdm.tqdm(val_dataloader, total=len(val_dataloader), ncols=121, desc=f'Validation', ascii=' =', colour='blue')
-        for iter, (x_data, y_data) in enumerate(val_tqdm):
-            pred = model(x_data.to(Device).permute(0,3,1,2))
-            loss = loss_fn(pred, y_data[..., 0].to(Device))
-
-            val_loss += loss.item()
-            
-            pred_label = torch.argmax(pred, -1).to('cpu')
-            positive += sum(pred_label == y_data[..., 0])
-            recall = positive/((iter+1)*val_dataloader.batch_size)
-            val_tqdm.set_postfix_str(f'| recall: {recall:.3f}, val_loss: {val_loss/(iter+1):.4f}')
-    return recall.numpy(), val_loss/(iter+1)
 
 if __name__ == '__main__':
     main()

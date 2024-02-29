@@ -6,14 +6,23 @@ def args_parse():
     #environment
     parser.add_argument('--gpus', dest='gpus', type=str, default='0', help='which device do you want to use')
     parser.add_argument('--cpus', dest='cpus', type=int, default=4, help='num of cpus for dataloader')
+    parser.add_argument('--seed', dest='seed', type=int, default=42, help='fix random seed')
+
+    #network
+    parser.add_argument('--network', dest='network', type=str, default='GEM', help='network to train for continual learning')
+    parser.add_argument('--n_tasks', dest='n_tasks', type=int, default=2, help='number of tasks for continuum dataset')
+    parser.add_argument('--n_memories', dest='n_memories', type=int, default=256, help='number of memories per task')
+    parser.add_argument('--memory_strength', dest='memory_strength', type=float, default=1.0, help='how may depending on memory')
 
     #model
-    parser.add_argument('--model', dest='model', type=str, default='DarkNet19', help='model to train')
+    parser.add_argument('--model', dest='model', type=str, default='ResNet18', help='model to train')
     parser.add_argument('--channel', dest='channel', type=int, default=64, help='channel of basis layers')
     parser.add_argument('--load', dest='load', type=str, default=False, help='whether to load model')
-    
+    parser.add_argument('--official', dest='official', type=str, default=False, help='model from torch vision')
+    parser.add_argument('--checkpoint', dest='checkpoint', type=str, default='checkpoints', help='directory to save model')
+
     #train
-    parser.add_argument('--epochs', dest='epochs', type=int, default=1000, help='epochs for training')
+    parser.add_argument('--epochs', dest='epochs', type=int, default=5, help='epochs for training')
     parser.add_argument('--loss' , dest='loss', type=str, default='CE', help='function to train model')
     parser.add_argument('--init_lr', dest='init_lr', type=float, default=1e-2, help='init learning rate for training')
     parser.add_argument('--lr_schedular', dest='lr_schedular', type=str, default='cosine_annealing', help='learning rate scheduler')
@@ -23,15 +32,19 @@ def args_parse():
     parser.add_argument('--eval_term', dest='eval_term', type=int, default=5, help='term of evaluate model')
 
     #dataset
-    parser.add_argument('--dataset', dest='dataset', type=str, default='cifar100', help='dataset for training')
+    parser.add_argument('--dataset', dest='dataset', type=str, default='mnist', help='dataset for training')
+    parser.add_argument('--continuum', dest='continuum', type=str, default=True, help='continual learning model choose True')
+    parser.add_argument('--data_path', dest='data_path', type=str, default='data', help='derectory for dataset')
     parser.add_argument('--image_size', dest='image_size', type=str, default='256x256', help='dataset for training')
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100, help='batch_size for training or inference')
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=10, help='batch_size for training or inference')
+    parser.add_argument('--in_channel', dest='in_channel', type=int, default=3, help='in_channel of images')
 
     args = parser.parse_args()
-    
     args.image_size = [int(l) for l in args.image_size.split('x')]
-    args.load = args.load in ['True', 'true', 'T', 't']
-    
+    args.load = args.load in [True, 'True', 'true', 'T', 't']
+    args.official = args.official in [True, 'True', 'true', 'T', 't']
+    args.continuum = args.continuum in [True, 'True', 'true', 'T', 't']
+
     return args
 
 def args_show(args, length=121, train=True):
@@ -43,7 +56,7 @@ def args_show(args, length=121, train=True):
     print(f'‖ {"gpus: "+str(len(args.gpus.split(","))):<{l}} | {"cpus: "+str(args.cpus):<{l}} | {" ":<{l}} ‖')
 
     print(f'‖{"Train" if train else "Val":-^{length-2}}‖')
-    print(f'‖ {"epochs: "+str(args.epochs):<{l}} | {"lr_schedular: "+args.lr_schedular+str(args.init_lr):<{l}} | {"optimizer: "+args.optimizer:<{l}} ‖') if train else print('',end='')
+    print(f'‖ {"epochs: "+str(args.epochs):<{l}} | {"lr_schedular: "+args.lr_schedular+f"({args.init_lr})":<{l}} | {"optimizer: "+args.optimizer:<{l}} ‖') if train else print('',end='')
     print(f'‖ {"loss: "+args.loss:<{l}} | {" ":<{l}} | {" ":<{l}} ‖')
 
     print(f'‖{"Model":-^{length-2}}‖')
@@ -54,27 +67,29 @@ def args_show(args, length=121, train=True):
 
     print(f'=' * length)
 
-def env_set(gpus):
-    np.random.seed(42)
-    torch.manual_seed(42)
-    random.seed(42)
+def env_set(args):
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    random.seed(args.seed)
+    if args.seed:
+        torch.cuda.manual_seed_all(args.seed)
 
     os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
-    os.environ['CUDA_VISIBLE_DEVICES'] = gpus
+    os.environ['CUDA_VISIBLE_DEVICES'] = args.gpus
 
 class LR_schedular:
-    def __init__(self, optimizer, schedule):
+    def __init__(self, optimizer, scheduler):
         self.optimizer = optimizer
         self.init_lr = self.optimizer.param_groups[0]['lr']
         self.lr = self.init_lr
         self.min_lr = 1e-4
         
-        if schedule == 'static':
-            self.schedule = self.static
-        elif schedule == 'linear':
-            self.schedule = self.linear_decay
-        elif schedule in 'cosine_annealing':
-            self.schedule = self.cosine_annealing
+        if scheduler == 'static':
+            self.scheduler = self.static
+        elif scheduler == 'linear':
+            self.scheduler = self.linear_decay
+        elif scheduler in 'cosine_annealing':
+            self.scheduler = self.cosine_annealing
             self.t_iter = 10
             self.t_max = self.t_iter
             self.t_mul = 2
@@ -83,14 +98,19 @@ class LR_schedular:
 
         self.optimizer.zero_grad()
 
-    def step(self, loss, *params):
-        self.lr = self.schedule(*params)
+    def init(self):
+        self.lr = self.init_lr
+        if self.scheduler == self.cosine_annealing:
+            self.t_iter = 10
+            self.t_max = self.t_iter
+            self.t_mul = 2
+            self.csum = 0
+            self.gamma = 1.0
+
+    def step(self, *params):
+        self.lr = self.scheduler(*params)
         for i in range(len(self.optimizer.param_groups)):
             self.optimizer.param_groups[i]['lr'] = self.lr
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
-        return self.lr
 
     def static(self, *params):
         return self.lr

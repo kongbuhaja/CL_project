@@ -7,24 +7,21 @@ from model.DarkNet import DarkNet19
 from model.ResNet import ResNet18
 from model.VGG import VGG19, VGG16, VGG11
 from model.GoogleNet import GoogleNet22
-from model.MLP import MLP
 from utils import dir_check
 
-def Model(model_name, channel, n_classes, in_channel, image_size):
-    if model_name == 'DarkNet19':
-        model = DarkNet19(channel, n_classes, in_channel)
-    elif model_name == 'ResNet18':
-        model = ResNet18(channel, n_classes, in_channel)
-    elif model_name == 'VGG11':
-        model = VGG11(channel, n_classes, in_channel, image_size)
-    elif model_name == 'VGG16':
-        model = VGG16(channel, n_classes, in_channel, image_size)
-    elif model_name == 'VGG19':
-        model = VGG19(channel, n_classes, in_channel, image_size)
-    elif model_name == 'GoogleNet22':
-        model = GoogleNet22(channel, n_classes, in_channel)
-    elif model_name == 'MLP':
-        model = MLP(channel, n_classes, in_channel)
+def Model(args, n_classes):
+    if args.model == 'DarkNet19':
+        model = DarkNet19(args.channel, n_classes, args.in_channel, args.official)
+    elif args.model == 'ResNet18':
+        model = ResNet18(args.channel, n_classes, args.in_channel, args.official)
+    elif args.model == 'VGG11':
+        model = VGG11(args.channel, n_classes, args.in_channel, args.image_size, args.official)
+    elif args.model == 'VGG16':
+        model = VGG16(args.channel, n_classes, args.in_channel, args.image_size, args.official)
+    elif args.model == 'VGG19':
+        model = VGG19(args.channel, n_classes, args.in_channel, args.image_size, args.official)
+    elif args.model == 'GoogleNet22':
+        model = GoogleNet22(args.channel, n_classes, args.in_channel, args.official)
 
     return model
 
@@ -38,36 +35,46 @@ def save_model(model, path, epoch, recall):
         f.write(text)
     print(f'Success to save model in {model_path}')
 
-def load_model(dataset_name, optimizer, model_name, channel, nclasses, term, in_channel=3, image_size=[256,256], load=False, checkpoint='checkpoints'):
-    dir = dir_check(f'{checkpoint}/{dataset_name}/{optimizer}/{model_name}')
+def load_model(args, n_classes, device='cpu'):
+    dir = dir_check(f'{args.checkpoint}/{args.dataset}/{args.optimizer}/{args.model}')
 
     model_path = dir + '/model.pt'
     info_path = dir + '/model.info'
     recall_path = dir + '/result/recall.txt'
 
-    if load:
+    if args.load:
         try:
             model = torch.load(model_path)
             with open(info_path, 'r') as f:
                 text = f.readlines()
             result = [info.split('\n')[0].split(':')[1] for info in text]
             result = [int(re) if '.' not in re else float(re) for re in result]
-            
-            with open(recall_path, 'r') as f:
-                text = f.readline()
-            recalls = [float(r) for r in text.split(' ')[:result[0]//term]]
-
             print(f'Success to load model from {model_path}')
-            return model, *result, recalls, dir
         except:
             print(f'Fail to load model from {model_path}, So ', end='')
+            print(f'Create {args.model} model')
+            model = Model(args, n_classes).to(device)
+            result = [0, 0.]
 
-    print(f'Create {model_name} model')
-    model = Model(model_name, channel, nclasses, in_channel, image_size)
-    return model, 0, 0., [], dir
+        try:
+            with open(recall_path, 'r') as f:
+                text = f.readline()
+            recalls = [float(r) for r in text.split(' ')[:result[0]//args.eval_term]]
+        except:
+            print("Don't have recalls log")
+            recalls = []
+    
+    else:
+        print(f'Create {args.model} model')
+        model = Model(args, n_classes).to(device)
+        result = [0, 0.]
+        recalls = []
+            
+    return model, *result, recalls, dir
 
 def save_recall(path, recalls, term):
     path += '/result'
+    dir_check(path)
 
     with open(f'{path}/recall.txt', 'w') as f:
         for r in recalls:
