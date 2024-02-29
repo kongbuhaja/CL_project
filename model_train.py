@@ -11,7 +11,7 @@ env_set(args)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-train_dataset, val_dataset = load_dataset(args, continuum=False)
+train_dataset, val_dataset = load_dataset(args)
 train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=args.cpus)
 val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, drop_last=True, num_workers=args.cpus)
 

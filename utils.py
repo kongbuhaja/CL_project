@@ -29,7 +29,7 @@ def args_parse():
     parser.add_argument('--optimizer', dest='optimizer', type=str, default='Adam', help='optimizer for training')
     
     #eval
-    parser.add_argument('--eval_term', dest='eval_term', type=int, default=5, help='term of evaluate model')
+    parser.add_argument('--eval_term', dest='eval_term', type=int, default=1, help='term of evaluate model')
 
     #dataset
     parser.add_argument('--dataset', dest='dataset', type=str, default='mnist', help='dataset for training')
