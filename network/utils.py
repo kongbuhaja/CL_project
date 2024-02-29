@@ -25,7 +25,8 @@ def save_model(model, path, epoch, recall):
     print(f'Success to save model in {model_path}')
 
 def load_network(args, n_classes, device='cpu'):
-    dir = dir_check(f'{args.checkpoint}/{args.dataset}/{args.optimizer}/{args.network}/{args.model}')
+
+    dir = dir_check(f'{args.checkpoint}/{args.dataset.upper()}/{args.optimizer}/{args.network}/{args.model}')
 
     network = Network(args, n_classes, device)
     return network, 0, 0., [], dir
