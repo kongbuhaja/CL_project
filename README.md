@@ -37,8 +37,8 @@
 - [ ] Suggest new continual learning model
 
 ## Performance  
-resize image(256x256) with pad.  
-official: get model from torchvision  
+Resize image(256x256) with pad.  
+Official: get model from torchvision  
 
 ### Normal data
 | Model | official | MNIST | CIFAR10 | CIFAR100 | IMAGENET |    
