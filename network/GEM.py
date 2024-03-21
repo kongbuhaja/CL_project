@@ -94,7 +94,7 @@ def store_grad(params, grads, grad_dims, tid):
         if param.grad is not None:
             beg = 0 if cnt == 0 else sum(grad_dims[:cnt])
             en = sum(grad_dims[:cnt + 1])
-            grads[beg: en, tid].copy_(param.grad.data.view(-1))
+            grads[beg:en, tid].copy_(param.grad.data.view(-1))
 
 def overwrite_grad(params, new_grad, grad_dims):
     for cnt, param in enumerate(params()):
@@ -105,8 +105,8 @@ def overwrite_grad(params, new_grad, grad_dims):
             param.grad.data.copy_(this_grad)
 
 def project2cone2(gradient, memories, margin=0.5, eps=1e-3):
-    memories_np = memories.cpu().t().double().numpy()
     gradient_np = gradient.cpu().contiguous().view(-1).double().numpy()
+    memories_np = memories.cpu().t().double().numpy()
     t = memories_np.shape[0]
     P = np.dot(memories_np, memories_np.transpose())
     P = 0.5 * (P + P.transpose()) + np.eye(t) * eps
