@@ -25,7 +25,7 @@ def args_parse():
     parser.add_argument('--epochs', dest='epochs', type=int, default=5, help='epochs for training')
     parser.add_argument('--loss' , dest='loss', type=str, default='CE', help='function to train model')
     parser.add_argument('--init_lr', dest='init_lr', type=float, default=1e-2, help='init learning rate for training')
-    parser.add_argument('--lr_scheduler', dest='lr_scheduler', type=str, default='cosine_annealing', help='learning rate scheduler')
+    parser.add_argument('--lr_scheduler', dest='lr_scheduler', type=str, default='linear', help='learning rate scheduler')
     parser.add_argument('--optimizer', dest='optimizer', type=str, default='Adam', help='optimizer for training')
     
     #eval
@@ -36,7 +36,7 @@ def args_parse():
     parser.add_argument('--continuum', dest='continuum', type=str, default=True, help='continual learning model choose True')
     parser.add_argument('--data_path', dest='data_path', type=str, default='data', help='derectory for dataset')
     parser.add_argument('--image_size', dest='image_size', type=str, default='256x256', help='dataset for training')
-    parser.add_argument('--batch_size', dest='batch_size', type=int, default=10, help='batch_size for training or inference')
+    parser.add_argument('--batch_size', dest='batch_size', type=int, default=100, help='batch_size for training or inference')
     parser.add_argument('--in_channel', dest='in_channel', type=int, default=3, help='in_channel of images')
 
     args = parser.parse_args()

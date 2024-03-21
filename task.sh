@@ -25,8 +25,8 @@ task() {
 log_dir="./log"
 log_directory_check "$log_dir"
 # task network_train GEM ResNet18 mnist 0 5 256 10 "$log_dir"
-# task network_train GEM ResNet18 cifar10 0 5 256 10 "$log_dir"
-# task network_train GEM ResNet18 cifar100 0 20 256 30 "$log_dir"
+# task network_train GEM ResNet18 cifar10 0 10 256 10 "$log_dir"
+task network_train GEM ResNet18 cifar100 0 50 256 30 "$log_dir"
 # task network_train single ResNet18 cifar100 0 20 256 10 "$log_dir"
 
 
