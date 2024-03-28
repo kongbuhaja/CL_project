@@ -19,7 +19,7 @@ RUN echo "== Install Basic Tools ==" &&\
     cmake libwebp-dev ca-certificates gnupg git \
     libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev \
     libatlas-base-dev gfortran \
-    libgl1-mesa-glx libglu1-mesa-dev x11-utils x11-apps 
+    libgl1-mesa-glx libglu1-mesa-dev x11-utils x11-apps quadprog
 
 
 # ENV LD_LIBRARY_PATH /usr/local/cuda-${CUDA}/targets/x86_64-linux/lib:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
