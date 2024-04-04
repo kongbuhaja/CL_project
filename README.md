@@ -55,7 +55,7 @@ Official: get model from torchvision
 | Model | official | MNIST | CIFAR10 | CIFAR100 | IMAGENET |    
 | ------------- | :---: | :------: | :------: | :------: | :------: |
 | **ResNet18**  | O | - | - | - | - |
-| **ResNet18**  | X | - | - | - | - |
+| **ResNet18**  | X | 55.8% | - | - | - |
 | **GoogleNet22**  | O | - | - | - | - |
 | **GoogleNet22**  | X | - | - | - | - |
 | **DarkNet19**  | X | - | - | - | - |
