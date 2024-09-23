@@ -13,19 +13,17 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt -y update 
 
 RUN echo "== Install Basic Tools ==" &&\
+    apt update &&\
     apt install -y --allow-unauthenticated \
-    openssh-server vim nano htop tmux sudo git unzip build-essential iputils-ping net-tools ufw \
-    python3 python3-pip curl dpkg libgtk2.0-dev \
-    cmake libwebp-dev ca-certificates gnupg git \
-    libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev \
-    libatlas-base-dev gfortran \
-    libgl1-mesa-glx libglu1-mesa-dev x11-utils x11-apps quadprog
-
-
-# ENV LD_LIBRARY_PATH /usr/local/cuda-${CUDA}/targets/x86_64-linux/lib:/usr/local/cuda/extras/CUPTI/lib64:/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-# RUN ln -s /usr/local/cuda/lib64/stubs/libcuda.so /usr/local/cuda/lib64/stubs/libcuda.so.1 && \
-#     echo "/usr/local/cuda/lib64/stubs" > /etc/ld.so.conf.d/z-cuda-stubs.conf && \
-#     ldconfig
+        openssh-server vim nano htop tmux sudo \
+        git unzip build-essential iputils-ping net-tools ufw \
+        python3 python3-pip curl dpkg libgtk2.0-dev \
+        cmake libwebp-dev ca-certificates gnupg git \
+        libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev \
+        libatlas-base-dev gfortran \
+        libgl1-mesa-glx libglu1-mesa-dev x11-utils x11-apps && \
+    apt clean &&\
+    rm -rf /var/lib/apt/list/*
 
 RUN echo "== Install Dev Tolls ==" &&\
     pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 &&\
