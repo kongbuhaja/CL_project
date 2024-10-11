@@ -1,5 +1,5 @@
 # CL_project  
-  
+- Pytorch based
 ## Processes  
 ### Data  
 - [x] Download data  
